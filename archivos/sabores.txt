@@ -1,0 +1,6 @@
+Chocolate-True
+Vainilla-True
+Frutilla-True
+Dulce de leche-True
+Limon-True
+Banana-False
