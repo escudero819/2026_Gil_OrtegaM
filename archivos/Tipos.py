@@ -35,51 +35,26 @@ def Añadir(diccionario_tipos):
 
     with open(PATH, "a") as tipos:
         for tipo, caracteristicas in diccionario_tipos.items():
-            line = tipo.capitalize() + CARACTER + str(caracteristicas["cantidad de bochas"]) + CARACTER + str(caracteristicas["precio"]) + "\n"
+            line = tipo.capitalize() + CARACTER + str(caracteristicas["cantidad de sabores"]) + CARACTER + str(caracteristicas["precio"]) + "\n"
             tipos.write(line)
     
     return True
 
-def Eleminar(lista_sabores):
+def Eleminar(lista_tipos):
     # buscara y eliminara el sabor mediante el nombre
-    lista_sabores = list(map(lambda nom: nom.capitalize(), lista_sabores))
-    print(lista_sabores)
+    lista_tipos = list(map(lambda nom: nom.capitalize(), lista_tipos))
+    print(lista_tipos)
     reescritura = []
-    with open(PATH, "r") as sabores:
-        linea = sabores.readline()
+    with open(PATH, "r") as tipos:
+        linea = tipos.readline()
         while linea:
             linea_leida = linea.strip().split("-")
-            if linea_leida[0] not in lista_sabores:
+            if linea_leida[0] not in lista_tipos:
                 reescritura.append(linea)
-            linea = sabores.readline()
+            linea = tipos.readline()
     
-    with open(PATH, "w") as sabores:
+    with open(PATH, "w") as tipos:
         for linea in reescritura:
-            sabores.write(linea)
+            tipos.write(linea)
     
     return True
-
-def Modificar_stock(sabor, estado):
-    # cambiara el estado del sabor que se pide
-    
-    reescritura = []
-    with open(PATH, "r") as sabores:
-        existencia = False
-        linea = sabores.readline()
-        while linea:
-            linea_leida = linea.strip().split("-")
-            if linea_leida[0] == sabor.capitalize():
-                linea = linea_leida[0] + CARACTER + str(estado) + "\n"
-                existencia = True
-            reescritura.append(linea)
-            linea = sabores.readline()
-    
-    with open(PATH, "w") as sabores:
-        for linea in reescritura:
-            sabores.write(linea)
-    
-    if existencia:
-        return(True, f"se a modificado el stock del sabor {sabor} a {estado}")
-    else:
-        return (False, f"el sabor {sabor} no se encuentra en los archivos. Añadalo para ver su estado")
-    

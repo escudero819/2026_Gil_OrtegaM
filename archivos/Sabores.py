@@ -60,14 +60,14 @@ def Eleminar(lista_sabores):
 
 def Modificar_stock(sabor, estado):
     # cambiara el estado del sabor que se pide
-    
+    sabor = sabor.capitalize()
     reescritura = []
     with open(PATH, "r") as sabores:
         existencia = False
         linea = sabores.readline()
         while linea:
             linea_leida = linea.strip().split("-")
-            if linea_leida[0] == sabor.capitalize():
+            if linea_leida[0] == sabor:
                 linea = linea_leida[0] + CARACTER + str(estado) + "\n"
                 existencia = True
             reescritura.append(linea)
