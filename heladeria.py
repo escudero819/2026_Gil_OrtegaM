@@ -3,22 +3,24 @@ import modo_elementos
 import modo_pedidos
 import modo_stock
 """
-import tkinter
+import tkinter as tk 
 
+#sacamos la info de la pantalla 
+root = tk.Tk()
+root.withdraw()
+ancho = root.winfo_screenwidth()
+alto  = root.winfo_screenheight()
+
+#tama;o de los botones 
 ANCHO_BOTONES = 20
 ALTO_BOTONES = 5
-FUENTE = "italica 20"
 
-ventana = tkinter.Tk()
-ventana.geometry("1280x720")
+ventana = tk.Tk()
+ventana.geometry(f"{ancho}x{alto}")
 
-
-boton_modo_elementos = tkinter.Button(ventana, text= "Modo Elementos",font= FUENTE, width= ANCHO_BOTONES, height= ALTO_BOTONES)
-boton_modo_pedidos = tkinter.Button(ventana, text= "Modo de Pedidos",font= FUENTE, width= ANCHO_BOTONES, height= ALTO_BOTONES)
-boton_modo_stock = tkinter.Button(ventana, text= "Modo Stock",font= FUENTE, width= ANCHO_BOTONES, height= ALTO_BOTONES)
-
-boton_modo_pedidos.pack()
-boton_modo_elementos.pack()
+#botones
 
 
+
+#loop
 ventana.mainloop()
