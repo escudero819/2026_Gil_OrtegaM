@@ -1,4 +1,5 @@
 import tkinter as tk
+
 def Modo_pedidos(Pedido, contraseña):
     print("1- Agregar")
     print("2- Eliminar")
