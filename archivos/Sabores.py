@@ -10,7 +10,6 @@ def Recopilar():
     estado_sabores = {}
     with open(PATH, "r") as sabores:
         line = sabores.readline()
-        print(line)
         while line:
             line = line.strip().split(CARACTER)
             estado_sabores[line[0]] = bool(line[1])

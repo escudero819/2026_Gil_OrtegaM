@@ -12,7 +12,6 @@ def Recopilar():
     with open(PATH, "r") as tipos:
         line = tipos.readline()
         while line:
-            print(line)
             line = line.strip().split(CARACTER)
             estado_tipos[line[0]] = {"cantidad de sabores": int(line[1]), "precio": int(line[2])}
             line = tipos.readline()
