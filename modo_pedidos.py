@@ -59,6 +59,16 @@ def Ventana_añadir_producto(ventana, pedido_actual):
             if len(lista_sabores.curselection()) > cantidad_sabores:
                 texto_error = tk.Label(ventana, text="Debe seleccionar exactamente " + str(cantidad_sabores) + " sabores", font=(FUENTE))
                 texto_error.pack()
+
+            elif len(lista_sabores.curselection()) == cantidad_sabores:
+                sabores_seleccionados = lista_sabores.curselection()
+                producto_a_añadir["sabores"] = []
+                for sabor in sabores_seleccionados:
+                    sabor = lista_sabores.get(sabor)
+                    producto_a_añadir["sabores"].append(sabor)
+                
+                Despedida_de_Añadir_Producto(ventana, pedido_actual, producto_a_añadir)
+                return 
                 
             elif len(lista_sabores.curselection()) < cantidad_sabores and len(lista_sabores.curselection()) != 1:
                 texto_repetido = tk.Label(ventana, text="Marque que sabor desea repetir", font=(FUENTE))
@@ -112,15 +122,7 @@ def Ventana_añadir_producto(ventana, pedido_actual):
                     Despedida_de_Añadir_Producto(ventana, pedido_actual, producto_a_añadir)
                     return
 
-            elif len(lista_sabores.curselection()) == cantidad_sabores:
-                sabores_seleccionados = lista_sabores.curselection()
-                producto_a_añadir["sabores"] = []
-                for sabor in sabores_seleccionados:
-                    sabor = lista_sabores.get(sabor)
-                    producto_a_añadir["sabores"].append(sabor)
-                
-                Despedida_de_Añadir_Producto(ventana, pedido_actual, producto_a_añadir)
-                return 
+
 
         boton_seleccionar = tk.Button(ventana, text="Seleccionar", command=lambda: avanzar(boton_seleccionar), font=(FUENTE))
         boton_seleccionar.pack()
@@ -159,7 +161,7 @@ def Ventana_añadir_producto(ventana, pedido_actual):
                 producto = lista_productos.get(indice).split(" - ")[0]
                 producto_a_añadir["nombre"] = producto
                 producto_a_añadir["precio"] = Productos[producto]["precio"]
-                seleccionar_sabores(ventana, caracteristicas['cantidad de sabores'], producto_a_añadir)
+                seleccionar_sabores(ventana, Productos[producto]['cantidad de sabores'], producto_a_añadir)
 
         boton_seleccionar = tk.Button(ventana, text="Seleccionar", font=(FUENTE), command=avanzar)
         boton_seleccionar.pack()
@@ -182,8 +184,7 @@ def Ventana_Eliminar_Producto(ventana, pedido_actual):
         indices = lista_productos.curselection()
         if indices:
             indice = indices[0]
-            producto = lista_productos.get(indice).split(" - ")[0]
-            print(producto)
+            producto = lista_productos.get(indice).split("-")[0]
             pedido_actual.Eliminar(producto)
             Ventana_Eliminar_Producto(ventana, pedido_actual)
 
@@ -218,6 +219,77 @@ def Ventana_Eliminar_Producto(ventana, pedido_actual):
     ventana.mainloop()
 
 
+def Ventana_Recibo(ventana, pedido_actual):
+    for widget in ventana.winfo_children():
+        widget.destroy()
+    ventana.title("Recibo")
+    ventana.geometry(ventana.geometry())
+
+    texto_nro_pedido = tk.Label(ventana, text="Nro de Pedido: " + str(pedido_actual.nro_pedido), font=(FUENTE_TITULO))
+    texto_nro_pedido.pack()
+
+    for producto in pedido_actual.VerPedido():
+        mostrar_producto = tk.Label(ventana, text=producto, font=(FUENTE))
+        mostrar_producto.pack()
+    
+    linea = tk.Label(ventana, text="-"*len(max(pedido_actual.VerPedido(), key=len)), font=(FUENTE))
+    linea.pack()
+    precio_total = tk.Label(ventana, text="Precio Total: $" + str(pedido_actual._PrecioTotal()), font=(FUENTE))
+    precio_total.pack()
+
+    linea_Id_ticket = tk.Label(ventana, text="Guardando como ticket" + str(pedido_actual.nro_pedido) + ".txt", font=(FUENTE))
+    linea_Id_ticket.pack()
+
+    def Salir():
+        pedido_actual.Ticket()
+        Previo_a_modo_pedidos(ventana, pedido_actual._contraseña)
+    
+    boton_salir = tk.Button(ventana, text="Volver", command=Salir, font=(FUENTE))
+    boton_salir.pack(side= "bottom")
+
+def Ventana_Ver_Pedido(ventana, pedido_actual):
+    for widget in ventana.winfo_children():
+        widget.destroy()
+    ventana.title("Pedido")
+    ventana.geometry(ventana.geometry())
+
+    texto_nro_pedido = tk.Label(ventana, text="Nro de Pedido: " + str(pedido_actual.nro_pedido), font=(FUENTE_TITULO))
+    texto_nro_pedido.pack()
+
+    for producto in pedido_actual.VerPedido():
+        mostrar_producto = tk.Label(ventana, text=producto, font=(FUENTE))
+        mostrar_producto.pack()
+    
+    linea = tk.Label(ventana, text="-"*len(max(pedido_actual.VerPedido(), key=len)), font=(FUENTE))
+    linea.pack()
+    precio_total = tk.Label(ventana, text="Precio Total: $" + str(pedido_actual._PrecioTotal()), font=(FUENTE))
+    precio_total.pack()
+
+    def Añadir_producto():
+        Ventana_añadir_producto(ventana, pedido_actual)
+
+    boton_añadir_producto = tk.Button(ventana, text="Añadir Producto", command=Añadir_producto, font=(FUENTE))
+    boton_añadir_producto.pack()
+
+    def Eliminar_producto():
+        Ventana_Eliminar_Producto(ventana, pedido_actual)
+
+    boton_eliminar_producto = tk.Button(ventana, text="Eliminar Producto", command=Eliminar_producto, font=(FUENTE))
+    boton_eliminar_producto.pack()
+
+    def Obtener_Recibo():
+        Ventana_Recibo(ventana, pedido_actual)
+    
+    boton_obtener_recibo = tk.Button(ventana, text="Obtener Recibo", command=Obtener_Recibo, font=(FUENTE))
+    boton_obtener_recibo.pack()
+
+    def Volver():
+        Modo_pedidos(ventana, pedido_actual)
+
+    boton_volver = tk.Button(ventana, text="Volver", command=Volver, font=(FUENTE))
+    boton_volver.pack(side= "bottom")
+
+
 def Modo_pedidos(ventana, pedido_actual):
     for widget in ventana.winfo_children():
         widget.destroy()
@@ -240,6 +312,12 @@ def Modo_pedidos(ventana, pedido_actual):
     boton_eliminar_producto = tk.Button(ventana, text="Eliminar Producto", command=Eliminar_producto, font=(FUENTE))
     boton_eliminar_producto.pack()
 
+    def Ver_pedido():
+        Ventana_Ver_Pedido(ventana, pedido_actual)
+
+    boton_ver_pedido = tk.Button(ventana, text="Ver Pedido", command=Ver_pedido, font=(FUENTE))
+    boton_ver_pedido.pack()
+
     def Salir():
         ventana.destroy()
         ventana_anterior.deiconify()
@@ -250,7 +328,7 @@ def Modo_pedidos(ventana, pedido_actual):
     ventana.mainloop()
     
 
-def Previo_a_modo_pedidos(contraseña, ventana):
+def Previo_a_modo_pedidos(ventana, contraseña):
 
     for widget in ventana.winfo_children():
         widget.destroy()
@@ -263,7 +341,7 @@ def Previo_a_modo_pedidos(contraseña, ventana):
     def iniciar_pedido():
         global Nro
         Nro = Nro + 1
-        pedido_actual = Pedido(Nro)
+        pedido_actual = Pedido(Nro, contraseña)
         Modo_pedidos(ventana, pedido_actual)
 
 
@@ -289,10 +367,11 @@ def Previo_a_modo_pedidos(contraseña, ventana):
 
     ventana.mainloop()
 
+
 ventana_x = tk.Tk()
 ventana_x.geometry(TAMAÑO_VENTANA)
 ventana_x.title("Menu Principal")
-Previo_a_modo_pedidos("1234",ventana_x)
+Previo_a_modo_pedidos(ventana_x, "1234")
 
 """
 print("1- Agregar")
