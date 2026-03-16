@@ -28,7 +28,7 @@ class Pedido():
         lista_mostrar = []
         for ID_loop in range(len(self.lista_Ids)):
             producto = self.lista_productos[self.lista_Ids[ID_loop]]
-            linea = str(ID_loop) + "- " + str(producto["nombre"]) + ": $" + str(producto["precio"]) + "\n"
+            linea = str(ID_loop) + "- " + str(producto["nombre"]) + ": $" + str(producto["precio"]) + "Sabores: " +str(producto["sabores"]) + "\n"
             print(linea)
             lista_mostrar.append(linea)
         return lista_mostrar
