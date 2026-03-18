@@ -7,15 +7,16 @@ class Pedido():
     
     PATH = "ventas/"
     
-    def __init__(self, nro_pedido):
+    def __init__(self, nro_pedido, contraseña):
         self.nro_pedido = nro_pedido
         self.lista_productos = {}
         self.lista_Ids = []
+        self._contraseña = contraseña
         self.ID_actual = 0
     
     def Añadir(self, caracteristicas):
-        self.lista_productos[self.ID_actual] = caracteristicas
-        self.lista_Ids.append(self.ID_actual)
+        self.lista_productos[str(self.ID_actual)] = caracteristicas
+        self.lista_Ids.append(str(self.ID_actual))
         self.ID_actual += 1
     
     def Eliminar(self, ID_eliminar):
@@ -24,12 +25,14 @@ class Pedido():
                 self.lista_productos.pop(ID_eliminar)
                 self.lista_Ids.pop(ID_loop)
 
-    def VerPedido(self):
+    def VerPedido(self, sabores=True):
         lista_mostrar = []
         for ID_loop in range(len(self.lista_Ids)):
             producto = self.lista_productos[self.lista_Ids[ID_loop]]
-            linea = str(ID_loop) + "- " + str(producto["nombre"]) + ": $" + str(producto["precio"]) + "Sabores: " +str(producto["sabores"]) + "\n"
-            print(linea)
+            if sabores:
+                    linea = str(ID_loop) + "- " + str(producto["nombre"]) + ": $" + str(producto["precio"]) + " | Sabores: " +str(producto["sabores"]) + "\n"
+            else:
+                linea = str(ID_loop) + "- " + str(producto["nombre"]) + ": $" + str(producto["precio"]) + "\n"
             lista_mostrar.append(linea)
         return lista_mostrar
     
