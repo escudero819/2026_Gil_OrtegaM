@@ -2,7 +2,7 @@
 Este modulo permitira modificar y leer el archivo de TIPOS mediante la entrega y devolucion de DICCIONARIOS
 """
 
-PATH = "C:/Mati/2026/archivos/tipos.txt"
+PATH = "archivos/tipos.txt"
 CARACTER = "-"
 
 def Recopilar():
