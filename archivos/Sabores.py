@@ -1,7 +1,7 @@
 """
 Este modulo permitira modificar y leer el archivo de SABORES mediante la entrega y devolucion de DICCIONARIOS
 """
-PATH = "C:/Mati/2026/archivos/sabores.txt"
+PATH = "archivos/sabores.txt"
 CARACTER = "-"
 
 def Recopilar():
@@ -12,12 +12,12 @@ def Recopilar():
         line = sabores.readline()
         while line:
             line = line.strip().split(CARACTER)
-            estado_sabores[line[0]] = bool(line[1])
+            estado_sabores[line[0]] = line[1].strip().lower() == "true"
             line = sabores.readline()
     
     return estado_sabores
 
-def Añadir(diccionario_sabores):
+def Añadir(sabor):
     # al recibir un diccionario lo transformara en una nueva linea en el txt
 
     with open(PATH, "r") as sabores:
@@ -25,15 +25,13 @@ def Añadir(diccionario_sabores):
         sabores_existentes = []
         for linea in archivo:
             linea_leida = linea.strip().split("-")
-            for sabor in diccionario_sabores.keys():
-                sabor = sabor.capitalize()
-                if linea_leida[0] == sabor:
-                    sabores_existentes.append(sabor)
-                    diccionario_sabores.pop(sabor)
+            sabor = sabor.capitalize()
+            if linea_leida[0] == sabor:
+                sabores_existentes.append(sabor)
 
     with open(PATH, "a") as sabores:
         for sabor, estado in diccionario_sabores.items():
-            line = sabor.capitalize() + CARACTER + str(estado) + "\n"
+            line = sabor.capitalize() + CARACTER + str(True) + "\n"
             sabores.write(line)
     
     return True
