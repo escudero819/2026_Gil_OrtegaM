@@ -1,29 +1,33 @@
 
 #importamos funciones
 import modo_elementos
-#import modo_pedidos
-#import modo_stock
+import modo_pedidos
+import modo_stock
 
 #importamos tkinter
 import tkinter as tk 
 
-#sacamos los valores de la apantalla
-import val_pantalla
-ancho, alto = val_pantalla.val_pantalla()
-
+LETRA = "Arial 20"
 #ventana 
 ventana = tk.Tk()
-ventana.geometry(f"{ancho}x{alto}")
+ventana.geometry(f"{400}x{400}")
+LETRA_TITULO = "Arial 30 bold"
+
+titulo = tk.Label(ventana, text = "HELADERIA", font = LETRA_TITULO, relief = "sunken")
+titulo.pack()
+
+text = tk.Label(ventana, text = "selecione un modo", font = LETRA)
+text.pack()
 
 #botones
-boton_elementos = tk.Button(ventana, text = "Elementos", command = lambda: ventana.destroy() or modo_elementos.Modo_Elementos())
-boton_elementos.place(x = 0, y = 0, width = ancho//2, height = alto)
+boton_elementos = tk.Button(ventana, text = "Elementos", font = LETRA, command = lambda: modo_elementos.Modo_Elementos(tk.Tk(), ventana_anterior=ventana))
+boton_elementos.pack()
 
-boton_pedidos = tk.Button(ventana, text = "pedidos")#, command = modo_pedidos.Modo_pedidos)
-boton_pedidos.place(x = ancho//4*2, y = 0, width = ancho//2, height = alto//2)
+boton_pedidos = tk.Button(ventana, text = "Pedidos", font = LETRA, command = lambda: modo_pedidos.Modo_pedidos(tk.Tk(), ventana_anterior=ventana))
+boton_pedidos.pack()
 
-boton_stock = tk.Button(ventana, text = "Stock")#, command = modo_stock.Modo_stock)
-boton_stock.place(x = ancho//4*2, y = alto//4*2, width = ancho//2, height = alto//2)
+boton_stock = tk.Button(ventana, text = "Stock", font = LETRA,  command = lambda: modo_stock.Modo_stock(tk.Tk(), ventana_anterior=ventana))
+boton_stock.pack()
 
 
 #loop

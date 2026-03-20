@@ -30,7 +30,7 @@ def Añadir(sabor):
                 sabores_existentes.append(sabor)
 
     with open(PATH, "a") as sabores:
-        for sabor, estado in diccionario_sabores.items():
+        if sabores_existentes == []:
             line = sabor.capitalize() + CARACTER + str(True) + "\n"
             sabores.write(line)
     

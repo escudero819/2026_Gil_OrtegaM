@@ -1,58 +1,223 @@
 import val_pantalla
 import tkinter as tk
-def Modo_Elementos():
+from archivos import Sabores
+from archivos import Tipos
 
-    #la info de la pantalla 
-    ancho, alto = val_pantalla.val_pantalla()
+LETRA = "Arial 20"
 
-    def vent_inicial():
-         ventana_inicio = tk.Tk()
-         ventana_inicio.geometry(f"{ancho}x{alto}")
-         ventana_inicio.config(bg = "black")
+def ventana_sabores(ventana):
+     for widget in ventana.winfo_children():
+          widget.destroy()
 
-         #botones
-         bot_añadir= tk.Button(ventana_inicio, text = "añadir", bg = "#6C6C6C", fg = "white", command = lambda: ventana_inicio.destroy() or vent_agre())
-         bot_añadir.place(x = ancho//100*45, y = alto//100*45, width = ancho//10, height = alto//10)
-         
-         bot_eliminar= tk.Button(ventana_inicio, text = "eliminar", bg = "#6C6C6C", fg = "white", command = lambda: ventana_inicio.destroy() or vent_elim())
-         bot_eliminar.place(x = ancho//100*45, y = alto//100*55, width = ancho//10, height = alto//10)
-         
+     #la info de la pantalla 
+     ancho, alto = val_pantalla.val_pantalla()
+     
+     def añadir_sabor(ventana):
+          for widget in ventana.winfo_children():
+               widget.destroy()
+          
+          ingreso_nombre = tk.Entry(ventana, font = LETRA)
+          ingreso_nombre.pack()
 
-         #el coso del loop 
-         ventana_inicio.mainloop()
+          def guardarNombre():
+               nombre = ingreso_nombre.get()
+               nombre = nombre.capitalize()
+               print(nombre)
+               Sabores.Añadir(nombre)
+          
+          def salir():
+               Modo_Elementos(ventana)
+          
+          boton_guardar = tk.Button(ventana, text = "guardar", font = LETRA, command = guardarNombre)
+          boton_guardar.pack()
+          
+
+          boton_salir = tk.Button(ventana, text = "salir", font = LETRA, command = salir)
+          boton_salir.pack(side = "bottom")
+          ventana.mainloop()
+     
+     boton_añadir = tk.Button(ventana, text = "añadir", font = LETRA, command = lambda: añadir_sabor(ventana))
+     boton_añadir.pack()
+
+     def eliminar_sabor(ventana):
+          for widget in ventana.winfo_children():
+               widget.destroy()
+          ingreso_nombre = tk.Entry(ventana)
+          ingreso_nombre.pack()
+
+          def eliminarNombre():
+               nombre = ingreso_nombre.get()
+               nombre = nombre.capitalize()
+               Sabores.Eleminar([nombre])
+
+          boton_eliminar = tk.Button(ventana, text = "eliminar", font = LETRA, command = eliminarNombre)
+          boton_eliminar.pack()
+
+          def salir(ventana):
+               ventana_sabores(ventana)
+          boton_salir = tk.Button(ventana, text = "salir", font = LETRA, command = lambda:salir(ventana))
+          boton_salir.pack(side = "bottom")
+          ventana.mainloop()
+     
+     boton_eliminar = tk.Button(ventana, text = "eliminar", font = LETRA, command = lambda: eliminar_sabor(ventana))
+     boton_eliminar.pack()
+     
+     def salir(ventana):
+          Modo_Elementos(ventana)
+     
+     boton_salir = tk.Button(ventana, text = "salir", font = LETRA, command = lambda:salir(ventana))
+     boton_salir.pack(side = "bottom")
+
+     ventana.mainloop()
+
+def ventana_tipos(ventana):
+     for widget in ventana.winfo_children():
+          widget.destroy()
+
+     #la info de la pantalla 
+     ancho, alto = val_pantalla.val_pantalla()
+     
+     def añadir_tipo(ventana):
+          for widget in ventana.winfo_children():
+               widget.destroy()
+          
+          ingreso_nombre = tk.Entry(ventana, font = LETRA)
+          ingreso_nombre.pack()
+
+          def guardarNombre():
+               nombre = ingreso_nombre.get()
+               nombre = nombre.capitalize()
+               print(nombre)
+               Tipos.Añadir({ nombre: {"cantidad de sabores": 0, "precio": 0} })
+          
+          def salir():
+               Modo_Elementos(ventana)
+          
+          boton_guardar = tk.Button(ventana, text = "guardar", font = LETRA, command = guardarNombre)
+          boton_guardar.pack()
+          
+
+          boton_salir = tk.Button(ventana, text = "salir", font = LETRA, command = salir)
+          boton_salir.pack(side = "bottom")
+          ventana.mainloop()
+     
+     boton_añadir = tk.Button(ventana, text = "añadir", font = LETRA, command = lambda: añadir_tipo(ventana))
+     boton_añadir.pack()
+
+     def eliminar_tipo(ventana):
+          for widget in ventana.winfo_children():
+               widget.destroy()
+          ingreso_nombre = tk.Entry(ventana)
+          ingreso_nombre.pack()
+
+          def eliminarNombre():
+               nombre = ingreso_nombre.get()
+               nombre = nombre.capitalize()
+               Sabores.Eleminar([nombre])
+
+          boton_eliminar = tk.Button(ventana, text = "eliminar", font = LETRA, command = eliminarNombre)
+          boton_eliminar.pack()
+
+          def salir(ventana):
+               ventana_tipos(ventana)
+
+          boton_salir = tk.Button(ventana, text = "salir", font = LETRA, command = lambda:salir(ventana))
+          boton_salir.pack(side = "bottom")
+
+          ventana.mainloop()
+     
+     boton_eliminar = tk.Button(ventana, text = "eliminar", font = LETRA, command = lambda: eliminar_tipo(ventana))
+     boton_eliminar.pack()
+     
+     def salir(ventana):
+          Modo_Elementos(ventana)
+     
+     boton_salir = tk.Button(ventana, text = "salir", font = LETRA, command = lambda:salir(ventana))
+     boton_salir.pack(side = "bottom")
+
+     ventana.mainloop()
 
 
-    def vent_agre():
-         ventana_agre = tk.Tk()
-         ventana_agre.geometry(f"{ancho}x{alto}")
-         ventana_agre.config(bg = "black")
-         caja_texto = tk.Entry(ventana_agre)
-         caja_texto.place(x = ancho//100*42, y = alto//100*50, width = ancho//6, height = alto//25)
+def ventana_sabores(ventana):
+     for widget in ventana.winfo_children():
+          widget.destroy()
+
+     #la info de la pantalla 
+     ancho, alto = val_pantalla.val_pantalla()
+     
+     def añadir_sabor(ventana):
+          for widget in ventana.winfo_children():
+               widget.destroy()
+          
+          ingreso_nombre = tk.Entry(ventana, font = LETRA)
+          ingreso_nombre.pack()
+
+          def guardarNombre():
+               nombre = ingreso_nombre.get()
+               nombre = nombre.capitalize()
+               print(nombre)
+               Sabores.Añadir(nombre)
+          
+          def salir():
+               Modo_Elementos(ventana)
+          
+          boton_guardar = tk.Button(ventana, text = "guardar", font = LETRA, command = guardarNombre)
+          boton_guardar.pack()
+          
+
+          boton_salir = tk.Button(ventana, text = "salir", font = LETRA, command = salir)
+          boton_salir.pack(side = "bottom")
+          ventana.mainloop()
+     
+     boton_añadir = tk.Button(ventana, text = "añadir", font = LETRA, command = lambda: añadir_sabor(ventana))
+     boton_añadir.pack()
+
+     def eliminar_sabor(ventana):
+          for widget in ventana.winfo_children():
+               widget.destroy()
+          ingreso_nombre = tk.Entry(ventana)
+          ingreso_nombre.pack()
+
+          def eliminarNombre():
+               nombre = ingreso_nombre.get()
+               nombre = nombre.capitalize()
+               Sabores.Eleminar([nombre])
+
+          boton_eliminar = tk.Button(ventana, text = "eliminar", font = LETRA, command = eliminarNombre)
+          boton_eliminar.pack()
+          ventana.mainloop()
+     
+     boton_eliminar = tk.Button(ventana, text = "eliminar", font = LETRA, command = lambda: eliminar_sabor(ventana))
+     boton_eliminar.pack()
+     
+     def salir(ventana):
+          Modo_Elementos(ventana)
+     
+     boton_salir = tk.Button(ventana, text = "salir", font = LETRA, command = lambda:salir(ventana))
+     boton_salir.pack(side = "bottom")
+
+     ventana.mainloop()
+
+def Modo_Elementos(ventana, ventana_anterior = None):
+     for widget in ventana.winfo_children():
+          widget.destroy()
+
+     #la info de la pantalla 
+     if ventana_anterior:
+          ventana.geometry(ventana_anterior.geometry())
 
 
-         def coso():
-               with open("elementos.txt", "a", encoding="utf-8") as archivo:
-                    archivo.write(caja_texto.get() + "\n")
-
-         bot_guar = tk.Button(ventana_agre, text = "guardar", bg = "#6C6C6C", fg = "white", command = coso)
-         bot_guar.place(x = ancho//100*45, y = alto//100*55, width = ancho//10, height = alto//25)
-         ventana_agre.mainloop()
-
-
-         def vent_elim():
-         ventana_elim = tk.Tk()
-         ventana_elim.geometry(f"{ancho}x{alto}")
-         ventana_elim.config(bg = "black")
-         caja_texto = tk.Entry(ventana_elim)
-         caja_texto.place(x = ancho//100*42, y = alto//100*50, width = ancho//6, height = alto//25)
-
-
-         def coso():
-               with open("elementos.txt", "a", encoding="utf-8") as archivo:
-                    archivo.write(caja_texto.get() + "\n")
-
-         bot_guar = tk.Button(ventana_elim, text = "guardar", bg = "#6C6C6C", fg = "white", command = coso)
-         bot_guar.place(x = ancho//100*45, y = alto//100*55, width = ancho//10, height = alto//25)
-         ventana_elim.mainloop()
-
-     vent_inicial() 
+     #botones
+     bot_sabores= tk.Button(ventana, text = "sabores", font = LETRA, command = lambda: ventana_sabores(ventana))
+     bot_sabores.pack()
+     
+     bot_tipos= tk.Button(ventana, text = "tipos", font = LETRA, command = lambda: ventana_tipos(ventana))
+     bot_tipos.pack()
+     def salir(ventana, ventana_anterior):
+          ventana.destroy()
+          ventana_anterior.deiconify()
+     boton_salir = tk.Button(ventana, text = "salir", font = LETRA, command = lambda:salir(ventana, ventana_anterior))
+     boton_salir.pack(side = "bottom")
+     
+     #el coso del loop 
+     ventana.mainloop()
