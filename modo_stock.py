@@ -69,9 +69,10 @@ def Modo_stock(ventana, ventana_anterior=None):
 
     def Salir(ventana):
         ventana.destroy()
-        ventana_anterior.deiconify()
-
-    boton_salir = tk.Button(ventana, text="Salir", command=lambda: Salir(ventana), font=FUENTE)
+        import heladeria
+        heladeria()
+        
+    boton_salir = tk.Button(ventana, text="Salir", command=lambda:Salir(ventana), font=FUENTE)
     boton_salir.pack(side = "bottom")
 
     ventana.mainloop()

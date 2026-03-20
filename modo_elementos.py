@@ -12,6 +12,8 @@ def ventana_sabores(ventana):
 
      #la info de la pantalla 
      ancho, alto = val_pantalla.val_pantalla()
+     texto = tk.Label(ventana, text = "Sabores", font = LETRA)
+     texto.pack()
      
      def añadir_sabor(ventana):
           for widget in ventana.winfo_children():
@@ -80,6 +82,8 @@ def ventana_tipos(ventana):
 
      #la info de la pantalla 
      ancho, alto = val_pantalla.val_pantalla()
+     texto = tk.Label(ventana, text = "Tipos", font = LETRA)
+     texto.pack()
      
      def añadir_tipo(ventana):
           for widget in ventana.winfo_children():
@@ -173,7 +177,8 @@ def Modo_Elementos(ventana, ventana_anterior = None):
      if ventana_anterior:
           ventana.geometry(ventana_anterior.geometry())
 
-
+     texto = tk.Label(ventana, text = "Modo elementos", font = LETRA)
+     texto.pack()
      #botones
      bot_sabores= tk.Button(ventana, text = "sabores", font = LETRA, command = lambda: ventana_sabores(ventana))
      bot_sabores.pack()
