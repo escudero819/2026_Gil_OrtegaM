@@ -225,7 +225,7 @@ def Ventana_Eliminar_Producto(ventana, pedido_actual):
     ventana.mainloop()
 
 
-def Ventana_Recibo(ventana, pedido_actual):
+def Ventana_Recibo(ventana, pedido_actual, ventana_anterior):
     for widget in ventana.winfo_children():
         widget.destroy()
     ventana.title("Recibo")
@@ -251,12 +251,14 @@ def Ventana_Recibo(ventana, pedido_actual):
 
     def Salir():
         pedido_actual.Ticket()
-        Previo_a_modo_pedidos(ventana, pedido_actual._contraseña)
+        ventana.destroy()
+        ventana_anterior.deiconify()
+        
     
     boton_salir = tk.Button(ventana, text="Volver", command=Salir, font=(FUENTE))
     boton_salir.pack(side= "bottom")
 
-def Ventana_Ver_Pedido(ventana, pedido_actual):
+def Ventana_Ver_Pedido(ventana, pedido_actual, ventana_anterior):
     for widget in ventana.winfo_children():
         widget.destroy()
     ventana.title("Pedido")
@@ -267,6 +269,7 @@ def Ventana_Ver_Pedido(ventana, pedido_actual):
 
     productos = pedido_actual.VerPedido()
     if productos:
+        ventana.geometry("500x400")
         for producto in productos:
             mostrar_producto = tk.Label(ventana, text=producto, font=(FUENTE))
             mostrar_producto.pack()
@@ -277,19 +280,21 @@ def Ventana_Ver_Pedido(ventana, pedido_actual):
         precio_total.pack()
 
         def Añadir_producto():
+            ventana.geometry("400x400")
             Ventana_añadir_producto(ventana, pedido_actual)
 
         boton_añadir_producto = tk.Button(ventana, text="Añadir Producto", command=Añadir_producto, font=(FUENTE))
         boton_añadir_producto.pack()
 
         def Eliminar_producto():
+            ventana.geometry("400x400")
             Ventana_Eliminar_Producto(ventana, pedido_actual)
 
         boton_eliminar_producto = tk.Button(ventana, text="Eliminar Producto", command=Eliminar_producto, font=(FUENTE))
         boton_eliminar_producto.pack()
 
         def Obtener_Recibo():
-            Ventana_Recibo(ventana, pedido_actual)
+            Ventana_Recibo(ventana, pedido_actual, ventana_anterior)
         
         boton_obtener_recibo = tk.Button(ventana, text="Obtener Recibo", command=Obtener_Recibo, font=(FUENTE))
         boton_obtener_recibo.pack()
@@ -332,7 +337,7 @@ def Modo_pedidos(ventana, pedido_actual, ventana_anterior=None):
     boton_eliminar_producto.pack()
 
     def Ver_pedido():
-        Ventana_Ver_Pedido(ventana, pedido_actual)
+        Ventana_Ver_Pedido(ventana, pedido_actual, ventana_anterior)
 
     boton_ver_pedido = tk.Button(ventana, text="Ver Pedido", command=Ver_pedido, font=(FUENTE))
     boton_ver_pedido.pack()
@@ -366,12 +371,13 @@ def Ventana_Ver_Sabores(ventana, contraseña):
     boton_volver = tk.Button(ventana, text="Volver", command=Volver, font=(FUENTE))
     boton_volver.pack(side= "bottom")
 
-def Previo_a_modo_pedidos(ventana, contraseña):
+def Previo_a_modo_pedidos(ventana, contraseña, ventana_anterior):
 
     for widget in ventana.winfo_children():
         widget.destroy()
     
     ventana.title("Bienvenido")
+    ventana.geometry(ventana_anterior.geometry())
 
     texto_bienvenido = tk.Label(ventana, text=f"Bienvenido a {HELADERIA}", font=(FUENTE_TITULO))
     texto_bienvenido.pack()
@@ -415,12 +421,6 @@ def Previo_a_modo_pedidos(ventana, contraseña):
     boton_volver.pack(side= "bottom")
 
     ventana.mainloop()
-
-
-ventana_x = tk.Tk()
-ventana_x.geometry(TAMAÑO_VENTANA)
-ventana_x.title("Menu Principal")
-Previo_a_modo_pedidos(ventana_x, "1234")
 
 """
 print("1- Agregar")

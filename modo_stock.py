@@ -76,7 +76,3 @@ def Modo_stock(ventana):
     boton_salir.pack(side = "bottom")
 
     ventana.mainloop()
-
-ventana_x = tk.Tk()
-ventana_x.geometry("400x400")
-Modo_stock(ventana_x)
