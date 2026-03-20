@@ -352,7 +352,7 @@ def Modo_pedidos(ventana, pedido_actual, ventana_anterior=None):
     ventana.mainloop()
     
 
-def Ventana_Ver_Sabores(ventana, contraseña):
+def Ventana_Ver_Sabores(ventana, contraseña, ventana_anterior):
     for widget in ventana.winfo_children():
         widget.destroy()
     ventana.title("Sabores")
@@ -366,7 +366,7 @@ def Ventana_Ver_Sabores(ventana, contraseña):
         texto_sabor.pack()
 
     def Volver():
-        Previo_a_modo_pedidos(ventana, contraseña)
+        Previo_a_modo_pedidos(ventana, contraseña, ventana_anterior)
 
     boton_volver = tk.Button(ventana, text="Volver", command=Volver, font=(FUENTE))
     boton_volver.pack(side= "bottom")
@@ -394,7 +394,7 @@ def Previo_a_modo_pedidos(ventana, contraseña, ventana_anterior):
 
 
     def VerSabores():
-        Ventana_Ver_Sabores(ventana, contraseña)
+        Ventana_Ver_Sabores(ventana, contraseña, ventana_anterior)
 
 
     texto_contrasena = tk.Label(ventana, text="Ingrese la contraseña")

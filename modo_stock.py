@@ -1,4 +1,3 @@
-from stock import Modificacion
 import tkinter as tk
 from archivos import Sabores
 FUENTE = "Arial 18"
@@ -7,8 +6,6 @@ FUENTE_TITULO = "Arial 22 bold"
 def Modificacion(estado, ventana):
     for widget in ventana.winfo_children():
         widget.destroy()
-
-    ventana.geometry("500x400")
 
     def Salir():
         Modo_stock(ventana)
@@ -47,15 +44,13 @@ def Modificacion(estado, ventana):
     ventana.mainloop()
 
 
-def Modo_stock(ventana):
+def Modo_stock(ventana, ventana_anterior=None):
     for widget in ventana.winfo_children():
         widget.destroy()
+        
     ventana.title("Modo Stock") 
-    ventana.geometry("400x400")
-
-    def Salir():
-        return ventana
-
+    if ventana_anterior:
+        ventana.geometry(ventana_anterior.geometry())
 
     def Renovar():
         Modificacion(True, ventana)
@@ -72,7 +67,11 @@ def Modo_stock(ventana):
     boton_acabado = tk.Button(ventana, text="Acabado", command=Acabado, font=FUENTE)
     boton_acabado.pack()
 
-    boton_salir = tk.Button(ventana, text="Salir", command=Salir, font=FUENTE)
+    def Salir(ventana):
+        ventana.destroy()
+        ventana_anterior.deiconify()
+
+    boton_salir = tk.Button(ventana, text="Salir", command=lambda: Salir(ventana), font=FUENTE)
     boton_salir.pack(side = "bottom")
 
     ventana.mainloop()
