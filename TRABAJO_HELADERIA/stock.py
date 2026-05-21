@@ -1,17 +1,13 @@
 import tkinter as tk
 from archivos import Sabores
-
 TAMAÑO_LETRA = "15"
 
-def Modificacion(estado, ventana_anterior, tamaño_ventana):
-
-    ventana = tk.Tk()
-    ventana.geometry(tamaño_ventana)
+def Modificacion(estado, ventana):
+    for widget in ventana.winfo_children():
+        widget.destroy()
 
     def Salir():
-        ventana_anterior.deiconify()
-        ventana.destroy()
-        return 
+        return
 
     def presionar_boton():
         resultado = Sabores.Modificar_stock(sabor.get(), estado)

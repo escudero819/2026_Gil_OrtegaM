@@ -1,9 +1,9 @@
 
 #importamos funciones
-from modo_pedidos import Modo_pedidos
-import modo_elementos
-import modo_pedidos
-import modo_stock
+from TRABAJO_HELADERIA.modo_pedidos import Modo_pedidos
+import TRABAJO_HELADERIA.modo_elementos
+import TRABAJO_HELADERIA.modo_pedidos
+import TRABAJO_HELADERIA.modo_stock
 
 #importamos tkinter
 import tkinter as tk 

@@ -1,4 +1,4 @@
-import modo_stock
+import tkinter as tk
 from pedido import Pedido
 import modo_stock
 """
@@ -17,4 +17,9 @@ pedido_actual.Añadir(orden1)
 pedido_actual.Añadir(orden2)
 pedido_actual.Ticket()
 """
-modo_stock.Modo_stock(tk.Tk(), "400x400")
+ventana = tk.Tk()
+ventana.geometry("400x400")
+tk.Button(ventana, text = "helado", bg = "#6C6C6C", fg = "white").pack()
+tk.Button(ventana, text = "pote", bg = "#6C6C6C", fg = "white").pack()
+
+ventana.mainloop()
