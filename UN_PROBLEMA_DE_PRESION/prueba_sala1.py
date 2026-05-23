@@ -132,15 +132,7 @@ class GameWindow(arcade.Window):
             self.background_textures.append(arcade.load_texture(IMAGE2_PATH))
         except Exception as e:
             # Fallback en caso de que falle la carga (crear texturas de colores planos)
-            print(f"Error cargando imágenes: {e}. Creando texturas alternativas...")
-            img1 = Image.new("RGB", (SCREEN_WIDTH, SCREEN_HEIGHT), (30, 30, 30))
-            img2 = Image.new("RGB", (SCREEN_WIDTH, SCREEN_HEIGHT), (60, 30, 60))
-            try:
-                self.background_textures.append(arcade.Texture(image=img1))
-                self.background_textures.append(arcade.Texture(image=img2))
-            except TypeError:
-                self.background_textures.append(arcade.Texture("bg1", img1))
-                self.background_textures.append(arcade.Texture("bg2", img2))
+            print(f"Error cargando imágenes: {e}.")
 
         # Inicializar listas de sprites (requerido para dibujo en Arcade 3.0+)
         self.background_list = arcade.SpriteList()
@@ -158,24 +150,6 @@ class GameWindow(arcade.Window):
         self.player.center_y = self.height / 2
         self.player_list.append(self.player)
 
-        # Inicializar textos informativos con efecto de sombra
-        self.text_shadow = arcade.Text(
-            "WASD / Flechas: Moverse | Animación de mapa activa (0.5s)",
-            x=16,
-            y=self.height - 26,
-            color=arcade.color.BLACK,
-            font_size=11,
-            bold=True
-        )
-        self.text_main = arcade.Text(
-            "WASD / Flechas: Moverse | Animación de mapa activa (0.5s)",
-            x=15,
-            y=self.height - 25,
-            color=arcade.color.WHITE,
-            font_size=11,
-            bold=True
-        )
-
     def on_draw(self):
         self.clear()
         
@@ -184,11 +158,6 @@ class GameWindow(arcade.Window):
         
         # 2. Dibujar el personaje
         self.player_list.draw()
-
-        # 3. Dibujar textos instructivos
-        if self.text_shadow and self.text_main:
-            self.text_shadow.draw()
-            self.text_main.draw()
 
     def on_update(self, delta_time: float):
         # Actualizar temporizador de la animación del fondo
