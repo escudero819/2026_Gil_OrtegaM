@@ -1,6 +1,7 @@
 import os
 import arcade
-from PIL import Image, ImageDraw
+from PIL import Image
+from clases.salas.tuberias import sala_tuberias
 
 # Configuración de Rutas de las Imágenes de Fondo
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
