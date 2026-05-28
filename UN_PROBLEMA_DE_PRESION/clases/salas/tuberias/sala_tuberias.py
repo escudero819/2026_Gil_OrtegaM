@@ -12,11 +12,39 @@ ancho = texturas_fondo[0].width
 alto = texturas_fondo[0].height
 paredes = [
     {
-        "nombre": "pared_norte",
+        "nombre": "pared_sur",
         "x": ancho / 2,
-        "y": 200,
+        "y": 10,
         "ancho": ancho,
         "alto": 50
+    },
+    {
+        "nombre": "pared_norte",
+        "x": ancho / 3 * 2 - 10,
+        "y": alto - 30,
+        "ancho": ancho - 150,
+        "alto": 50
+    },
+    {
+        "nombre": "pared_este",
+        "x": ancho - 10,
+        "y": alto / 2,
+        "ancho": 50,
+        "alto": alto
+    },
+    {
+        "nombre": "pared_oeste",
+        "x": 20,
+        "y": alto / 2,
+        "ancho": 50,
+        "alto": alto
+    },
+    {
+        "nombre": "pared_lateral_salida",
+        "x": 205,
+        "y": 410,
+        "ancho": 10,
+        "alto": 200
     }
 ]
 
