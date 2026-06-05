@@ -12,22 +12,49 @@ class JuegoView(arcade.Window):
         self.sala = sala_instanciada
         super().__init__(self.sala.ancho, self.sala.alto)
         
-        self.jugador = arcade.Sprite(CURRENT_PATH + "/jugador.gif", center_x=self.sala.ancho/2, center_y=self.sala.alto/2)
+        self.jugador_sprite = arcade.Sprite(CURRENT_PATH + "/jugador.gif", center_x=self.sala.ancho/2, center_y=self.sala.alto/2)
+        self.jugador = Player(self.jugador_sprite)
         self.jugador_lista = arcade.SpriteList()
-        self.jugador_lista.append(self.jugador)
+        self.jugador_lista.append(self.jugador.sprite)
         
         # Inicializamos la física solo con los bloqueos de la sala
-        self.motor_fisica = arcade.PhysicsEngineSimple(self.jugador, self.sala.lista_bloqueos)
+        self.motor_fisica = arcade.PhysicsEngineSimple(self.jugador.sprite, self.sala.lista_bloqueos)
         
         # Estado de la interacción
         self.objeto_objetivo = None
-        self.destino_x = self.jugador.center_x
-        self.destino_y = self.jugador.center_y
+        self.destino_x = self.jugador.sprite.center_x
+        self.destino_y = self.jugador.sprite.center_y
         self.velocidad_jugador = 5
 
         #integracion de la version anterior
         self.current_bg_index = 0
         self.bg_timer = 0.0
+    
+    def on_key_press(self, key, modifiers):
+        # Control de movimiento
+        if key == arcade.key.UP or key == arcade.key.W:
+            self.jugador.move_up = True
+        elif key == arcade.key.DOWN or key == arcade.key.S:
+            self.jugador.move_down = True
+        elif key == arcade.key.LEFT or key == arcade.key.A:
+            self.jugador.move_left = True
+        elif key == arcade.key.RIGHT or key == arcade.key.D:
+            self.jugador.move_right = True
+            
+        # Cerrar la ventana si se presiona la tecla de Escape
+        elif key == arcade.key.ESCAPE:
+            arcade.exit()
+
+    def on_key_release(self, key, modifiers):
+        # Desactivar intenciones de movimiento
+        if key == arcade.key.UP or key == arcade.key.W:
+            self.jugador.move_up = False
+        elif key == arcade.key.DOWN or key == arcade.key.S:
+            self.jugador.move_down = False
+        elif key == arcade.key.LEFT or key == arcade.key.A:
+            self.jugador.move_left = False
+        elif key == arcade.key.RIGHT or key == arcade.key.D:
+            self.jugador.move_right = False
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -47,7 +74,6 @@ class JuegoView(arcade.Window):
                 self.destino_y = y
 
     def on_update(self, delta_time: float):
-
         self.bg_timer += delta_time
         if self.bg_timer >= 0.4:
             self.bg_timer = 0.0
@@ -57,7 +83,8 @@ class JuegoView(arcade.Window):
 
         # 1. Calcular movimiento hacia el destino (Mover al jugador)
         # (Aquí puedes usar vectores o una interpolación simple para mover al jugador hacia destino_x/y)
-        self.mover_jugador_hacia_destino()
+        #self.mover_jugador_hacia_destino()
+        self.jugador.update()
         
         # 2. Actualizar física (por si choca con un muro invisible mientras camina)
         self.motor_fisica.update()
@@ -65,7 +92,7 @@ class JuegoView(arcade.Window):
         # 3. TRUCO DE CONTROL: Verificar si estamos cerca del objeto interactuable
         if self.objeto_objetivo is not None:
             # Medimos la distancia actual entre el jugador y el mueble
-            distancia = arcade.get_distance_between_sprites(self.jugador, self.objeto_objetivo)
+            distancia = arcade.get_distance_between_sprites(self.jugador_sprite, self.objeto_objetivo)
             
             # Si el jugador ya entró en el "radio" configurado en el diccionario...
             if distancia <= self.objeto_objetivo.distancia_minima:
