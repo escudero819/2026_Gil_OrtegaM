@@ -3,23 +3,29 @@ import os
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))   
 
-Colisiones_Transparentes = True
+Colisiones_Transparentes = False
 
+class Objeto(arcade.Sprite):
 
+    def __init__(self, tipo, imagen_path, center_x, center_y):
+        super().__init__(imagen_path, center_x=center_x, center_y=center_y)
+        self.tipo = tipo
 
-class Interactuable():
-
-    def __init__(self, script):
-        self.script = script
-
-
-class Objeto():
-
-    def __init__(self, nombre, imagen):
-
-        self.imagen = imagen
+class Interactuable(Objeto):
+    
+    def __init__(self, nombre, imagen_path, center_x, center_y, funcion, ubicacion_jugador = None, radio_interaccion = 30):
+        super().__init__("interactuable", imagen_path, center_x, center_y)
         self.nombre = nombre
-        
+        self.funcion = funcion
+        self.ubicacion_jugador = (self.center_x + ubicacion_jugador(1), self.center_y + ubicacion_jugador(2))
+        self.radio_interaccion = radio_interaccion
+
+class Bloqueo(Objeto):
+
+    def __init__(self,imagen_transparente, center_x, center_y, ancho, alto):
+        super().__init__("bloqueo", imagen_transparente, center_x, center_y)
+        self.width = ancho
+        self.height = alto
 
 class Sala():
 
@@ -55,27 +61,18 @@ class Sala():
 
         for colision in paredes:
             if Colisiones_Transparentes:
-                pared = arcade.Sprite(CURRENT_PATH + "/transparente.png")
+                imagen = CURRENT_PATH + "/transparente.png"
             else:
-                pared = arcade.Sprite(CURRENT_PATH + "/semitransparente_rojo.png")
-            pared.center_x = colision["x"]
-            pared.center_y = colision["y"]
-            pared.width = colision["ancho"]
-            pared.height = colision["alto"]
+                imagen = CURRENT_PATH + "/semitransparente_rojo.png"
+            pared = Bloqueo(imagen, int(colision["x"]), int(colision["y"]), int(colision["ancho"]), int(colision["alto"]))
             self.lista_bloqueos.append(pared)
     
     def Interactuables(self, interactuables: list[dict]):
         
         for interactuable in interactuables:
-            # Creamos el Sprite con el que se genera la interaccion
-            textura = interactuable["textura"]
-            objeto = arcade.Sprite(textura)
-            objeto.center_x = interactuable["x"]
-            objeto.center_y = interactuable["y"]
-            self.interactuables_sprites.append(objeto)
             # Creamos el objeto que interactua y genera pantallas emergentes
-            objeto_interactuable = Interactuable(interactuable["funcion"])
-            self.interactuables_objetos = objeto_interactuable
+            objeto_interactuable = Interactuable(interactuable["funcion"], interactuable["textura"], interactuable["x"], interactuable["y"], ubicacion_jugador=interactuable.get("ubicacion_jugador"), radio_interaccion=interactuable.get("radio_interaccion"))
+            self.lista_bloqueos.append(objeto_interactuable)
     
     def Objetos(self, objetos: list[dict]):
 

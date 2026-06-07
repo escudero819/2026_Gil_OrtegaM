@@ -4,9 +4,17 @@ import arcade
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
+fondo1 = arcade.load_texture(CURRENT_PATH + "/texturas/fondo/fondo1.png")
+fondo1.height = 720
+fondo1.width = 1280
+
+fondo2 = arcade.load_texture(CURRENT_PATH + "/texturas/fondo/fondo2.png")
+fondo2.height = 720
+fondo2.width = 1280
+
 texturas_fondo = [
-    arcade.load_texture(CURRENT_PATH + "/texturas/fondo/fondo1.png"),
-    arcade.load_texture(CURRENT_PATH + "/texturas/fondo/fondo2.png")
+    fondo1,
+    fondo2
 ]
 ancho = texturas_fondo[0].width
 alto = texturas_fondo[0].height
@@ -20,9 +28,9 @@ paredes = [
     },
     {
         "nombre": "pared_norte",
-        "x": ancho / 3 * 2 - 10,
-        "y": alto - 30,
-        "ancho": ancho - 150,
+        "x": ancho / 2,
+        "y": alto / 10 * 9.5,
+        "ancho": ancho,
         "alto": 50
     },
     {
@@ -36,15 +44,15 @@ paredes = [
         "nombre": "pared_oeste",
         "x": 20,
         "y": alto / 2,
-        "ancho": 50,
+        "ancho": 80,
         "alto": alto
     },
     {
         "nombre": "pared_lateral_salida",
-        "x": 205,
-        "y": 410,
-        "ancho": 10,
-        "alto": 200
+        "x": ancho / 4,
+        "y": alto / 5 * 3.75,
+        "ancho": 20,
+        "alto": 300
     }
 ]
 
@@ -68,5 +76,7 @@ class Sala_Tuberias(Sala):
         super().__init__()
         super().Fondo(texturas_fondo)
         super().Colisiones(paredes)
-        super().Interactuables(interactuables)
-        super().Objetos(objetos)
+
+        #proximamente
+        """super().Interactuables(interactuables)
+        super().Objetos(objetos)"""

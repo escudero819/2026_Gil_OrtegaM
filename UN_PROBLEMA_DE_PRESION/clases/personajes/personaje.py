@@ -1,19 +1,18 @@
 import arcade
 from PIL import Image, ImageDraw
 
-PLAYER_SPEED = 5
+PLAYER_SPEED = 7
 
 
 # --- Clase del Personaje (Player) ---
 class Player(arcade.Sprite):
-    def __init__(self, sprite):
+    def __init__(self, imagen_path, center_x, center_y):
         # Crear texturas procedimentales para izquierda y derecha
         
-        self.sprite = sprite
-        self.texture_right = self.sprite.texture
-        self.texture_left = self.sprite.texture.flip_left_right()
-
-        super().__init__(self.texture_right)
+        super().__init__(imagen_path, center_x=center_x, center_y=center_y)
+        
+        self.texture_right = self.texture
+        self.texture_left = self.texture.flip_left_right()
         
         # Atributos de intención de movimiento
         self.move_up = False
@@ -21,11 +20,14 @@ class Player(arcade.Sprite):
         self.move_left = False
         self.move_right = False
 
-    def update(self):
+        self.velocidad = PLAYER_SPEED
+        
         # Inicializar velocidades
         self.change_x = 0
         self.change_y = 0
 
+    def update_por_teclado(self):
+        
         # Aplicar intención de movimiento
         if self.move_left:
             self.change_x = -PLAYER_SPEED
