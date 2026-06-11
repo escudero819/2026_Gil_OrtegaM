@@ -4,13 +4,11 @@ import arcade
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
-fondo1 = arcade.load_texture(CURRENT_PATH + "/texturas/fondo/fondo1.png")
-fondo1.height = 720
-fondo1.width = 1280
+fondo1 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/electrificado1.png")
 
-fondo2 = arcade.load_texture(CURRENT_PATH + "/texturas/fondo/fondo2.png")
-fondo2.height = 720
-fondo2.width = 1280
+
+fondo2 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/electrificado2.png")
+
 
 texturas_fondo = [
     fondo1,
@@ -37,14 +35,14 @@ paredes = [
         "nombre": "pared_este",
         "x": ancho - 10,
         "y": alto / 2,
-        "ancho": 50,
+        "ancho": ancho / 100 * 3,
         "alto": alto
     },
     {
         "nombre": "pared_oeste",
         "x": 20,
         "y": alto / 2,
-        "ancho": 80,
+        "ancho": ancho / 100 * 5,
         "alto": alto
     },
     {
@@ -52,19 +50,21 @@ paredes = [
         "x": ancho / 4,
         "y": alto / 5 * 3.75,
         "ancho": 20,
-        "alto": 300
+        "alto": alto / 10 * 4
     }
 ]
 
+textura_valvulas = arcade.load_texture(CURRENT_PATH + "/texturas/interactuables/valvulas.png")
+def func_valvulas():
+    print("Has interactuado con las válvulas. ¡Ahora puedes abrir la puerta de salida!")
 interactuables = [
     {
-        "nombre": "bloque de prueba",
-        "textura": arcade.load_texture(CURRENT_PATH + "/../semitransparente_rojo.png"),
-        "x": ancho/2,
-        "y": alto/2,
-        "ancho": 50,
-        "alto": 50,
-        "funcion": lambda: print("interaccion")
+        "nombre": "valvulas",
+        "textura": textura_valvulas,
+        "x": 570,
+        "y": 470,
+        "funcion": func_valvulas,
+        "ubicacion_jugador": (0, - textura_valvulas.height / 2 - 20),
     }
 ]
 
@@ -76,7 +76,7 @@ class Sala_Tuberias(Sala):
         super().__init__()
         super().Fondo(texturas_fondo)
         super().Colisiones(paredes)
+        super().Interactuables(interactuables)
 
         #proximamente
-        """super().Interactuables(interactuables)
-        super().Objetos(objetos)"""
+        #super().Objetos(objetos)

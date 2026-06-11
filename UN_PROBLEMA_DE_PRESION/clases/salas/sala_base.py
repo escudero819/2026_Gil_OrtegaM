@@ -13,12 +13,16 @@ class Objeto(arcade.Sprite):
 
 class Interactuable(Objeto):
     
-    def __init__(self, nombre, imagen_path, center_x, center_y, funcion, ubicacion_jugador = None, radio_interaccion = 30):
+    def __init__(self, nombre: str, imagen_path: str, center_x: int, center_y: int, funcion: callable, ubicacion_jugador = None):
         super().__init__("interactuable", imagen_path, center_x, center_y)
         self.nombre = nombre
         self.funcion = funcion
-        self.ubicacion_jugador = (self.center_x + ubicacion_jugador(1), self.center_y + ubicacion_jugador(2))
-        self.radio_interaccion = radio_interaccion
+        self.ubicacion_jugador = {
+            "x": self.center_x + ubicacion_jugador[0],
+            "y": self.center_y + ubicacion_jugador[1] 
+        }
+        
+        print(f"Interactuable '{self.nombre}' creado en ({self.center_x}, {self.center_y}) con ubicación de jugador en ({self.ubicacion_jugador['x']}, {self.ubicacion_jugador['y']})")
 
 class Bloqueo(Objeto):
 
@@ -71,7 +75,7 @@ class Sala():
         
         for interactuable in interactuables:
             # Creamos el objeto que interactua y genera pantallas emergentes
-            objeto_interactuable = Interactuable(interactuable["funcion"], interactuable["textura"], interactuable["x"], interactuable["y"], ubicacion_jugador=interactuable.get("ubicacion_jugador"), radio_interaccion=interactuable.get("radio_interaccion"))
+            objeto_interactuable = Interactuable(interactuable["nombre"], interactuable["textura"], interactuable["x"], interactuable["y"], funcion=interactuable["funcion"], ubicacion_jugador=interactuable.get("ubicacion_jugador"))
             self.lista_bloqueos.append(objeto_interactuable)
     
     def Objetos(self, objetos: list[dict]):
