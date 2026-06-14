@@ -2,7 +2,7 @@ import arcade
 import os, math
 from clases.salas.sala_base import Interactuable, Objeto
 from clases.salas.tuberias.sala_tuberias import Sala_Tuberias
-from clases.personajes.personaje import Player
+from clases.personajes.ingeniero import Ingeniero
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 SCREEN_TITLE = "Sala 1 - Mapa Animado Dinámico"
@@ -13,7 +13,7 @@ class JuegoView(arcade.Window):
         self.sala = sala_instanciada
         super().__init__(self.sala.ancho, self.sala.alto)
         
-        self.jugador = Player(CURRENT_PATH + "/jugador.gif", center_x=self.sala.ancho/2, center_y=self.sala.alto/2)
+        self.jugador = Ingeniero(center_x=self.sala.ancho/2, center_y=self.sala.alto/2)
         self.jugador_lista = arcade.SpriteList()
         self.jugador_lista.append(self.jugador)
 

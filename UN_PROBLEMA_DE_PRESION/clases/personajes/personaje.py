@@ -1,19 +1,31 @@
-import arcade, math
+import arcade, math, time
 from PIL import Image, ImageDraw
 
 PLAYER_SPEED = 5
 PLAYER_SPEED_AUTOMATICO = 7
+VELOCIDAD_ANIMACION = 0.07
 
 # --- Clase del Personaje (Player) ---
 class Player(arcade.Sprite):
-    def __init__(self, imagen_path, center_x, center_y):
+    def __init__(self, frames_idle, frames_caminando, center_x, center_y):
         # Crear texturas procedimentales para izquierda y derecha
         
-        super().__init__(imagen_path, center_x=center_x, center_y=center_y)
+        self.texturas_idle = {
+            "derecha": arcade.load_texture(frames_idle["derecha"]),
+            "izquierda": arcade.load_texture(frames_idle["izquierda"]),
+            "arriba": arcade.load_texture(frames_idle["arriba"]),
+            "abajo": arcade.load_texture(frames_idle["abajo"])
+        }
+
+        self.texturas_caminando = {
+            "derecha": list(map(lambda tex: arcade.load_texture(tex) ,frames_caminando["derecha"])),
+            "izquierda": list(map(lambda tex: arcade.load_texture(tex) ,frames_caminando["izquierda"])),
+            "arriba": list(map(lambda tex: arcade.load_texture(tex) ,frames_caminando["arriba"])),
+            "abajo": list(map(lambda tex: arcade.load_texture(tex) ,frames_caminando["abajo"]))
+        }
+
+        super().__init__(self.texturas_idle["abajo"], center_x=center_x, center_y=center_y)
         self.scale = 2.5
-        
-        self.texture_right = self.texture
-        self.texture_left = self.texture.flip_left_right()
 
         # Definir una caja de colisión personalizada.
         # Los puntos se miden desde el centro (0, 0) del sprite.
@@ -42,9 +54,22 @@ class Player(arcade.Sprite):
         self.destino_x = center_x
         self.destino_y = center_y
 
+        # Inicializar variables animaciones
+        self.frame_actual = 0
+        self.caminando = False
+        self.bandera_animacion = time.time()
+        self.direccion = None
+
+
     def actualizar_animacion(self):
         # Aquí podrías agregar lógica para cambiar la textura del jugador según el estado (caminando, quieto, etc.)
-        pass
+        if time.time() - self.bandera_animacion > VELOCIDAD_ANIMACION:
+            print("actualizando animacion")
+            self.frame_actual += 1
+            if self.frame_actual > 5:
+                self.frame_actual = 0
+            self.texture = self.texturas_caminando[self.direccion][self.frame_actual]
+            self.bandera_animacion = time.time()
 
     def update_por_teclado(self):
         
@@ -62,11 +87,7 @@ class Player(arcade.Sprite):
         self.center_x += self.change_x
         self.center_y += self.change_y
 
-        # Cambiar orientación visual del sprite
-        if self.change_x > 0:
-            self.texture = self.texture_right
-        elif self.change_x < 0:
-            self.texture = self.texture_left
+        self.actualizar_animacion()
         
     def update_por_click(self):
         # Cálculo de distancia restante
@@ -80,13 +101,22 @@ class Player(arcade.Sprite):
             self.change_x = (dx / distancia) * PLAYER_SPEED_AUTOMATICO
             self.change_y = (dy / distancia) * PLAYER_SPEED_AUTOMATICO
 
-            # Cambiar orientación visual con Click
-            if self.change_x > 0:
-                self.texture = self.texture_right
-            elif self.change_x < 0:
-                self.texture = self.texture_left
+            if abs(self.change_x) >= abs(self.change_y):
+                if self.change_x > 0:
+                    self.direccion = "derecha"
+                else:
+                    self.direccion = "izquierda"
+            else:
+                if self.change_y > 0:
+                    self.direccion = "arriba"
+                else:
+                    self.direccion = "abajo"
+            
+            self.actualizar_animacion()
+
             return False # Aún no llegamos al destino
         else:
             self.change_x = 0
             self.change_y = 0
+            self.texture = self.texturas_idle[self.direccion]
             return True # Llegamos al destino
