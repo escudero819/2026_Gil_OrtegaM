@@ -3,7 +3,7 @@ import os
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))   
 
-Colisiones_Transparentes = False
+Colisiones_Transparentes = True
 
 class Objeto(arcade.Sprite):
 

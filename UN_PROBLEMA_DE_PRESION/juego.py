@@ -8,26 +8,37 @@ CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 SCREEN_TITLE = "Sala 1 - Mapa Animado Dinámico"
 velocidad_jugador_click = 7
 
-class JuegoView(arcade.Window):
+class JuegoView(arcade.View):
     def __init__(self, sala_instanciada):
+        super().__init__()
         self.sala = sala_instanciada
-        super().__init__(self.sala.ancho, self.sala.alto)
         
-        self.jugador = Ingeniero(center_x=self.sala.ancho/2, center_y=self.sala.alto/2)
-        self.jugador_lista = arcade.SpriteList()
-        self.jugador_lista.append(self.jugador)
-
-        # Inicializamos la física solo con los bloqueos de la sala
-        self.motor_fisica = arcade.PhysicsEngineSimple(self.jugador, self.sala.lista_bloqueos)
+        # En el __init__ solo definimos las propiedades vacías
+        self.jugador = None
+        self.jugador_lista = None
+        self.motor_fisica = None
         
         # Estado de la interacción
         self.objeto_objetivo = None
         self.moviéndose_por_click = False
-        self.objetivo_alcanzado = False  # Para controlar cuándo se alcanza el destino
+        self.objetivo_alcanzado = False  
 
-        #integracion de la version anterior
+        # Integración de la animación de fondo
         self.current_bg_index = 0
         self.bg_timer = 0.0
+
+    def on_show_view(self):
+        """ 
+        MÉTODO CRÍTICO: Se ejecuta cuando el menú hace el cambio a esta vista.
+        Aquí la ventana ya existe de forma activa, por lo que es seguro cargar personajes y físicas.
+        """
+        # Instanciamos al jugador y su lista de sprites de forma segura
+        self.jugador = Ingeniero(center_x=self.sala.ancho/2, center_y=self.sala.alto/2)
+        self.jugador_lista = arcade.SpriteList()
+        self.jugador_lista.append(self.jugador)
+
+        # Inicializamos el motor de física con la sala ya cargada
+        self.motor_fisica = arcade.PhysicsEngineSimple(self.jugador, self.sala.lista_bloqueos)
 
 
     """   CONTROL DE MOVIMIENTO COMBINADO    """
@@ -156,7 +167,3 @@ class JuegoView(arcade.Window):
         if arcade.check_for_collision_with_list(sprite, self.sala.lista_bloqueos):
             return True
         return False
-
-
-window = JuegoView(Sala_Tuberias())
-arcade.run()
