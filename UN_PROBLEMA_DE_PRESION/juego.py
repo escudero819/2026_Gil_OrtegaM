@@ -1,7 +1,6 @@
 import arcade
 import os, math
 from clases.salas.sala_base import Interactuable, Objeto
-from clases.salas.tuberias.sala_tuberias import Sala_Tuberias
 from clases.personajes.ingeniero import Ingeniero
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -21,7 +20,7 @@ class JuegoView(arcade.View):
         # Estado de la interacción
         self.objeto_objetivo = None
         self.moviéndose_por_click = False
-        self.objetivo_alcanzado = False  
+        self.objetivo_alcanzado = False
 
         # Integración de la animación de fondo
         self.current_bg_index = 0
@@ -113,6 +112,17 @@ class JuegoView(arcade.View):
         # LÓGICA DE CONTROL DE MOVIMIENTO COMBINADO
         # Verificamos si el usuario está presionando activamente alguna tecla WASD/Flechas
         teclado_activo = self.jugador.move_left or self.jugador.move_right or self.jugador.move_up or self.jugador.move_down
+
+        if self.sala.lista_eliminadores:
+            contacto = arcade.check_for_collision_with_list(self.jugador, self.sala.lista_eliminadores)
+
+            if contacto:
+                print("has perdido por tocar el agua electrificada")
+
+                from menu import MenuView
+                vista_menu = MenuView()
+                self.window.show_view(vista_menu)
+                return
 
         if teclado_activo:
             # Si usa el teclado, manda el teclado

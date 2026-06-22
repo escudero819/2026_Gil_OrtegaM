@@ -13,7 +13,7 @@ fondo2 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/electrificado2.png
 
 FACTOR_X = ANCHO / fondo1.width
 FACTOR_Y = ALTO / fondo1.height
-FACTOR_ESCALAR = 1.25
+FACTOR_ESCALAR = min(FACTOR_X, FACTOR_Y)
 ancho = fondo1.width
 alto = fondo1.height
 #escalamos las texturas de fondo para que se ajusten a la pantalla, manteniendo su proporción original
@@ -128,7 +128,30 @@ interactuables = [
         "ubicacion_jugador": (0, textura_maquinaria.height / 2 + 5),
     }
 ]
-objetos = []
+
+agua1 = escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas/agua1.png")) 
+agua2 = escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas/agua2.png")) 
+
+eliminadores = [
+    {
+        "imagen": agua1,
+        "x": 275 * FACTOR_ESCALAR,
+        "y": 310 * FACTOR_ESCALAR
+    },
+    {
+        "imagen": agua2,
+        "x": 710 * FACTOR_ESCALAR,
+        "y": 240 * FACTOR_ESCALAR
+    }
+]
+
+salida = {
+    "x": 100 * FACTOR_ESCALAR,
+    "y": 600 * FACTOR_ESCALAR,
+    "ancho": 50 * FACTOR_ESCALAR,
+    "alto": 50 * FACTOR_ESCALAR,
+    "funcion": lambda: print("saliendo")
+}
 
 class Sala_Tuberias(Sala):
     
@@ -137,6 +160,5 @@ class Sala_Tuberias(Sala):
         super().Fondo(texturas_fondo)
         super().Colisiones(paredes)
         super().Interactuables(interactuables)
-
-        #proximamente
-        #super().Objetos(objetos)
+        super().Salida(salida["x"], salida["y"], salida["ancho"], salida["alto"])
+        super().Eliminadores(eliminadores)

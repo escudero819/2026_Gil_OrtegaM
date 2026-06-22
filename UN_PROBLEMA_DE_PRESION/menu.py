@@ -130,9 +130,12 @@ class MenuView(arcade.View):
         # Esto limpia automáticamente todo lo que MenuView estaba dibujando
         self.window.show_view(vista_juego)
 
-def main():
-    # Inicializamos la ventana contenedora global
-    window = arcade.Window(ANCHO, ALTO, SCREEN_TITLE)
+def main(ventana=None):
+    if not ventana:
+        # Inicializamos la ventana contenedora global
+        window = arcade.Window(ANCHO, ALTO, SCREEN_TITLE)
+    else:
+        window = ventana
     
     # Creamos la vista del menú y la mostramos en la ventana
     menu = MenuView()
