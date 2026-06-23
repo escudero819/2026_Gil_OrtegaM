@@ -109,20 +109,33 @@ class JuegoView(arcade.View):
             self.current_bg_index = (self.current_bg_index + 1) % len(self.sala.fondo_texturas)
             self.sala.fondo_sprite.texture = self.sala.fondo_texturas[self.current_bg_index]
 
-        # LÓGICA DE CONTROL DE MOVIMIENTO COMBINADO
-        # Verificamos si el usuario está presionando activamente alguna tecla WASD/Flechas
-        teclado_activo = self.jugador.move_left or self.jugador.move_right or self.jugador.move_up or self.jugador.move_down
-
+        # verificamos si toco un eliminador (si es que hay)
         if self.sala.lista_eliminadores:
             contacto = arcade.check_for_collision_with_list(self.jugador, self.sala.lista_eliminadores)
 
             if contacto:
                 print("has perdido por tocar el agua electrificada")
 
-                from menu import MenuView
-                vista_menu = MenuView()
-                self.window.show_view(vista_menu)
+                from game_over import Game_Over
+                vista_game_over = Game_Over("agua")
+                self.window.show_view(vista_game_over)
                 return
+            
+        #verificamos si ha tocado la salida
+        salida_alcanzada = arcade.check_for_collision_with_list(self.jugador, self.sala.lista_salida)
+
+        if salida_alcanzada:
+            print("HAS SALIDOOOO")
+
+            from menu import MenuView
+
+            vista_menu = MenuView()
+            self.window.show_view(vista_menu)
+            return
+
+        # LÓGICA DE CONTROL DE MOVIMIENTO COMBINADO
+        # Verificamos si el usuario está presionando activamente alguna tecla WASD/Flechas
+        teclado_activo = self.jugador.move_left or self.jugador.move_right or self.jugador.move_up or self.jugador.move_down
 
         if teclado_activo:
             # Si usa el teclado, manda el teclado
@@ -160,7 +173,7 @@ class JuegoView(arcade.View):
     def ejecutar_interaccion(self):
         # Aquí disparas la lógica del Escape Room
         print(f"Ejecutando función de interacción: {self.objeto_objetivo.funcion.__name__}")
-        self.objeto_objetivo.funcion()
+        self.objeto_objetivo.funcion(self.sala)
 
     def on_draw(self):
         self.clear()
@@ -171,6 +184,8 @@ class JuegoView(arcade.View):
         
         # 2. Dibujar el personaje
         self.jugador_lista.draw()
+
+        self.sala.lista_salida.draw()
     
     def _verificar_bloqueo(self, sprite):
 

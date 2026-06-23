@@ -7,24 +7,40 @@ ALTO = 720
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
-fondo1 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/electrificado1.png")
+fondo_inicio_1 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/electrificado1.png")
 
-fondo2 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/electrificado2.png")
+fondo_inicio_2 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/electrificado2.png")
 
-FACTOR_X = ANCHO / fondo1.width
-FACTOR_Y = ALTO / fondo1.height
+FACTOR_X = ANCHO / fondo_inicio_1.width
+FACTOR_Y = ALTO / fondo_inicio_1.height
 FACTOR_ESCALAR = min(FACTOR_X, FACTOR_Y)
-ancho = fondo1.width
-alto = fondo1.height
+ancho = fondo_inicio_1.width
+alto = fondo_inicio_1.height
 #escalamos las texturas de fondo para que se ajusten a la pantalla, manteniendo su proporción original
 def escalar_textura(textura):
     textura.width = textura.width * FACTOR_ESCALAR
     textura.height = textura.height * FACTOR_ESCALAR
     return textura
 
-texturas_fondo = [
-    escalar_textura(fondo1),
-    escalar_textura(fondo2)
+texturas_fondo_inicio = [
+    escalar_textura(fondo_inicio_1),
+    escalar_textura(fondo_inicio_2)
+]
+
+fondo_post_valvulas_1 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/sin_agua1.png")
+fondo_post_valvulas_2 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/sin_agua2.png")
+
+texturas_post_valvulas = [
+    escalar_textura(fondo_post_valvulas_1),
+    escalar_textura(fondo_post_valvulas_2)
+]
+
+fondo_post_panel_1 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/no_electrificado1.png")
+fondo_post_panel_2 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/no_electrificado2.png")
+
+texturas_post_panel = [
+    escalar_textura(fondo_post_panel_1),
+    escalar_textura(fondo_post_panel_2)
 ]
 
 paredes = [
@@ -71,11 +87,13 @@ textura_panel = escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas/in
 textura_maquinaria = escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas/interactuables/maquinaria.png"))
 
 
-def func_valvulas():
+def func_valvulas(sala_tuberias):
     print("Has interactuado con las válvulas.")
+    sala_tuberias.ValvulasResuelto()
 
-def func_panel():
+def func_panel(sala_tuberias):
     print("Has interactuado con el panel.")
+    sala_tuberias.PanelResuelto()
 
 def func_comp1():
     print("Has interactuado con la computadora izq")
@@ -147,9 +165,9 @@ eliminadores = [
 
 salida = {
     "x": 100 * FACTOR_ESCALAR,
-    "y": 600 * FACTOR_ESCALAR,
-    "ancho": 50 * FACTOR_ESCALAR,
-    "alto": 50 * FACTOR_ESCALAR,
+    "y": 500 * FACTOR_ESCALAR,
+    "ancho": 100 * FACTOR_ESCALAR,
+    "alto": 100 * FACTOR_ESCALAR,
     "funcion": lambda: print("saliendo")
 }
 
@@ -157,8 +175,16 @@ class Sala_Tuberias(Sala):
     
     def __init__(self):
         super().__init__()
-        super().Fondo(texturas_fondo)
+        super().Fondo(texturas_fondo_inicio)
         super().Colisiones(paredes)
         super().Interactuables(interactuables)
-        super().Salida(salida["x"], salida["y"], salida["ancho"], salida["alto"])
+        super().Salida(salida["x"], salida["y"], salida["ancho"], salida["alto"], salida["funcion"])
         super().Eliminadores(eliminadores)
+    
+    def ValvulasResuelto(self):
+        self.lista_eliminadores.pop(-1)
+        super().Fondo(texturas_post_valvulas)
+    
+    def PanelResuelto(self):
+        self.lista_eliminadores.pop(-1)
+        super().Fondo(texturas_post_panel)

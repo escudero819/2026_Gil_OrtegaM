@@ -17,11 +17,17 @@ class Interactuable(Objeto):
         super().__init__("interactuable", imagen_path, center_x, center_y)
         self.nombre = nombre
         self.funcion = funcion
-        self.ubicacion_jugador = {
-            "x": self.center_x + ubicacion_jugador[0],
-            "y": self.center_y + ubicacion_jugador[1] 
-        }
-        
+        if ubicacion_jugador:
+            self.ubicacion_jugador = {
+                "x": self.center_x + ubicacion_jugador[0],
+                "y": self.center_y + ubicacion_jugador[1] 
+            }
+        else:
+            self.ubicacion_jugador = {
+                "x": center_x,
+                "y": center_y
+                }
+            
         print(f"Interactuable '{self.nombre}' creado en ({self.center_x}, {self.center_y}) con ubicación de jugador en ({self.ubicacion_jugador['x']}, {self.ubicacion_jugador['y']})")
 
 class Salida(Interactuable):
@@ -61,14 +67,15 @@ class Sala():
         self.objetos_sprites = arcade.SpriteList(use_spatial_hash=True)
         self.objetos_objetos = []
 
-        # un Sprite de 'Salida' para saber que cuando el jugador lo toque se pasara al siguiente nivel
-        self.salida = arcade.Sprite()
+        # una SpriteList de 'Salida' para saber que cuando el jugador lo toque se pasara al siguiente nivel
+        self.lista_salida = arcade.SpriteList()
 
         # lista para los objetos capaces de eliminar al jugador, por defecto en none para que exista posibilidad de no haber
         self.lista_eliminadores = None
     
     def Fondo(self, texturas_fondo: list[arcade.Texture]):
-
+        if self.fondo_lista:
+            self.fondo_lista.pop()
         self.fondo_texturas = texturas_fondo
         self.fondo_sprite = arcade.Sprite(self.fondo_texturas[0])
         self.fondo_lista.append(self.fondo_sprite)
@@ -91,10 +98,9 @@ class Sala():
             self.lista_bloqueos.append(objeto_interactuable)
 
 
-    def Salida(self, x, y, ancho, alto):
-        self.salida = arcade.Sprite(arcade.load_texture(CURRENT_PATH + "/transparente.png"), center_x = x, center_y = y)
-        self.salida.width = ancho
-        self.salida.height = alto
+    def Salida(self, x, y, ancho, alto, funcion):
+        self.salida = Salida(x, y, ancho, alto, funcion)
+        self.lista_salida.append(self.salida)
     
     def Eliminadores(self, eliminadores):
         self.lista_eliminadores = arcade.SpriteList()

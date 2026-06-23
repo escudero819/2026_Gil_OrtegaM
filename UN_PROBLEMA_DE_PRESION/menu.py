@@ -51,6 +51,7 @@ class MenuView(arcade.View):
         # Inicializamos la lista de sprites
         self.sprites_menu = arcade.SpriteList()
         
+
         # Cargamos el Fondo
         self.fondo = arcade.Sprite(IMG_FONDO, center_x=ANCHO/2, center_y=ALTO/2, scale=0.5)
         self.sprites_menu.append(self.fondo)
@@ -62,10 +63,10 @@ class MenuView(arcade.View):
         self.tx_salir_press = arcade.load_texture(IMG_SALIR_PRESS)
         
         # Cargamos los Botones
-        self.btn_iniciar = arcade.Sprite(self.tx_iniciar_normal, center_x=ANCHO/2, center_y=280)
+        self.btn_iniciar = arcade.Sprite(self.tx_iniciar_normal, center_x=ANCHO/2, center_y=240)
         self.sprites_menu.append(self.btn_iniciar)
         
-        self.btn_salir = arcade.Sprite(self.tx_salir_normal, center_x=ANCHO/2, center_y=160, scale=0.8)
+        self.btn_salir = arcade.Sprite(self.tx_salir_normal, center_x=ANCHO/2, center_y=140, scale=0.8)
         self.sprites_menu.append(self.btn_salir)
 
     def on_draw(self):
