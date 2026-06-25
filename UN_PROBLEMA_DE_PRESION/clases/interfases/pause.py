@@ -1,58 +1,62 @@
 import arcade
-from filtro import ColorFilter
+from filtro import modo_filtro
 
-class PauseManager:
+class modo_pausa:
 
-    def __init__(self, title="PAUSA", overlay_color=(100, 100, 100, 160)):
-        self._paused = False
-        self.title = title
-        self.overlay_color = overlay_color
-        
+    def __init__(self, titulo="PAUSA", pausa=False, color_superposicion=(100, 100, 100, 160)):
+        self.tateQuieto = pausa
+        self.titulo = titulo
+        self.color_superposicion = color_superposicion
 
-    def pause(self):
-        self._paused = True
 
-    def resume(self):
-        self._paused = False
+    def pausar(self):
+        self.tateQuieto = True
 
-    def toggle(self):
-        self._paused = not self._paused
+    def reanudar(self):
+        self.tateQuieto = False
 
-    def is_paused(self):
-        return self._paused
+    def alternar(self):
+        self.tateQuieto = not self.tateQuieto
+
+    def esta_pausado(self):
+        return self.tateQuieto
+
+    def puede_actualizar(self):
+        """Retorna True si se debe actualizar (cuando NO está pausado)."""
+        return not self.tateQuieto
 
     def draw_overlay(self, window: arcade.Window):
-        if not self._paused:
+        if not self.tateQuieto:
             return
         # overlay semitransparente
-        arcade.draw_lrtb_rectangle_filled(0, window.width, window.height, 0, self.overlay_color)
+        arcade.draw_lrbt_rectangle_filled(0, window.width, 0, window.height, self.color_superposicion)
         # texto central
-        arcade.draw_text(self.title, window.width // 2, window.height // 2 + 40, arcade.color.WHITE, 48, anchor_x="center")
+        arcade.draw_text(self.titulo, window.width // 2, window.height // 2 + 40, arcade.color.WHITE, 48, anchor_x="center")
         # botón continuar
         btn_w, btn_h = 220, 50
         btn_x = window.width // 2
         btn_y = window.height // 2 - 40
-        arcade.draw_rectangle_filled(btn_x, btn_y, btn_w, btn_h, arcade.color.DARK_BLUE)
+        arcade.draw_lbwh_rectangle_filled(btn_x - btn_w / 2, btn_y - btn_h / 2, btn_w, btn_h, arcade.color.DARK_BLUE)
         arcade.draw_text("Continuar", btn_x, btn_y, arcade.color.WHITE, 18, anchor_x="center", anchor_y="center")
 
-    def handle_mouse_press(self, x, y, window: arcade.Window):
+    def manejar_click(self, x, y, window: arcade.Window):
         """Devuelve True si el evento fue consumido por la UI de pausa."""
-        if not self._paused:
+        if not self.tateQuieto:
             return False
         btn_w, btn_h = 220, 50
         btn_x = window.width // 2
         btn_y = window.height // 2 - 40
         if abs(x - btn_x) <= btn_w / 2 and abs(y - btn_y) <= btn_h / 2:
-            self.resume()
+            self.reanudar()
             return True
         # otros controles de la UI podrían añadirse aquí
         return True
 
-    def handle_key_press(self, symbol, modifiers):
+    def manejar_tecla(self, symbol, modifiers):
         # tecla ESC o P reanuda
-        if not self._paused:
+        if not self.tateQuieto:
             return False
         if symbol in (arcade.key.ESCAPE, arcade.key.P):
-            self.resume()
+            self.reanudar()
             return True
         return False
