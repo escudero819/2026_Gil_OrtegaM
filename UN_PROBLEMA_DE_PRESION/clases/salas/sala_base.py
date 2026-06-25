@@ -50,6 +50,25 @@ class Bloqueo(Objeto):
         self.width = ancho
         self.height = alto
 
+class Inventario():
+
+    def __init__(self):
+        self.lista_objetos = []
+    
+    def agregar_objeto(self, objeto):
+        self.lista_objetos.append(objeto)
+    
+    def consultar(self, nombre_objeto):
+        for objeto in self.lista_objetos:
+            if objeto == nombre_objeto:
+                return True
+    
+    def eliminar_objeto(self, nombre_objeto):
+        for i in range(len(self.lista_objetos)):
+            if self.lista_objetos == nombre_objeto:
+                self.lista_objetos.pop(i)
+                
+
 class Sala():
 
     def __init__(self):
@@ -72,6 +91,9 @@ class Sala():
 
         # lista para los objetos capaces de eliminar al jugador, por defecto en none para que exista posibilidad de no haber
         self.lista_eliminadores = None
+
+        # Como el inventario sera por sala aprevechamos y tendremos dicha info en esta clase
+        self.inventario = Inventario()
     
     def Fondo(self, texturas_fondo: list[arcade.Texture]):
         if self.fondo_lista:

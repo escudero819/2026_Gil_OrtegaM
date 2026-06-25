@@ -9,6 +9,7 @@ screen = display.get_default_screen()
 ANCHO_VENTANA = screen.width
 ALTO_VENTANA = screen.height
 
+<<<<<<< HEAD
 def rotar_punto(x, y, cx, cy, ang):
     dx = x - cx
     dy = y - cy
@@ -18,6 +19,9 @@ def rotar_punto(x, y, cx, cy, ang):
     )
 
 class MiVentana(arcade.Window):
+=======
+class MiVentana(arcade.View):
+>>>>>>> 2b53ecc (primera interaccion conseguida: armario.)
     def __init__(self):
         super().__init__(ANCHO_VENTANA // 5 * 3, ALTO_VENTANA // 5 * 3, "Mi Ventana")
         arcade.set_background_color(arcade.color.WHITE)
@@ -40,6 +44,9 @@ class MiVentana(arcade.Window):
         if self.modo_pausa.puede_actualizar():
             self.angulo += math.radians(90) * delta_time
             self.angulo %= math.pi * 2
+
+    def on_view(self):
+        pass
 
     def on_draw(self):
         self.clear()
@@ -82,8 +89,9 @@ class MiVentana(arcade.Window):
         # nada más que actualizar para pause (no mantiene tamaño)
 
 def main():
+    window = arcade.Window(ANCHO_VENTANA, ALTO_VENTANA, "prueba de interfaz")
     ventana = MiVentana()
-    ventana.run()
+    window.show_view(ventana)
 
 if __name__ == "__main__":
     main()

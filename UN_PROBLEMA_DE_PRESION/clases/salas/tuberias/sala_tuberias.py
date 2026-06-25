@@ -1,7 +1,7 @@
-from ..sala_base import Sala
+from clases.salas.tuberias.armario import ArmarioInterfaz
+from ..sala_base import Sala, Interactuable
 import os
 import arcade
-
 ANCHO = 1280
 ALTO = 720
 
@@ -41,6 +41,12 @@ fondo_post_panel_2 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/no_ele
 texturas_post_panel = [
     escalar_textura(fondo_post_panel_1),
     escalar_textura(fondo_post_panel_2)
+]
+
+fondo_post_porton = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/salida.png")
+
+texturas_post_porton = [
+    escalar_textura(fondo_post_porton)
 ]
 
 paredes = [
@@ -85,24 +91,43 @@ textura_valvulas = escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas
 textura_computadora = escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas/interactuables/computadora.png"))
 textura_panel = escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas/interactuables/panel.png"))
 textura_maquinaria = escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas/interactuables/maquinaria.png"))
+textura_armario = escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas/interactuables/armario.png"))
+textura_porton = escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas/interactuables/porton.png"))
 
-
-def func_valvulas(sala_tuberias):
+def func_valvulas(partida):
     print("Has interactuado con las válvulas.")
-    sala_tuberias.ValvulasResuelto()
+    sala = partida.sala
+    sala.ValvulasResuelto()
+    mensaje = "Perfecto, ahora puedo alcanzar el armario"
+    partida.mostrar_texto(mensaje)
 
-def func_panel(sala_tuberias):
+def func_panel(partida):
     print("Has interactuado con el panel.")
-    sala_tuberias.PanelResuelto()
+    sala = partida.sala
+    if sala.inventario.consultar("herramientas"):
+        sala.PanelResuelto()
+        mensaje = "Vamos!!! He conseguido arreglar los cables!"
+        partida.mostrar_texto(mensaje)
+    else:
+        mensaje = "para arreglar esto necesito cables y herramientas, suelen estar en el armario"
+        partida.mostrar_texto(mensaje)
 
-def func_comp1():
+def func_comp1(partida):
     print("Has interactuado con la computadora izq")
 
-def func_comp2():
+def func_comp2(partida):
     print("Has interactuado con la computadora der")
 
-def func_maquinaria():
+def func_maquinaria(partida):
     print("Has interactuado con la maqinaria")
+
+def func_armario(partida):
+    print("has interactuado con el armario")
+    sala = partida.sala
+    partida.window.show_view(sala.armario)
+
+def func_porton(partida):
+    partida.sala.PortonAbierto()
 
 interactuables = [
     {
@@ -138,13 +163,30 @@ interactuables = [
         "ubicacion_jugador": (0, textura_computadora.height / 2 + 5),
     },
     {
+        "nombre": "armario",
+        "textura": textura_armario,
+        "x": 784.5 * FACTOR_ESCALAR,
+        "y": 250 * FACTOR_ESCALAR,
+        "funcion": func_armario,
+        "ubicacion_jugador": (-textura_armario.width / 2 - 10, 0),
+    },
+    {
         "nombre": "maquinaria",
         "textura": textura_maquinaria,
         "x": 700 * FACTOR_ESCALAR,
         "y": 120 * FACTOR_ESCALAR,
         "funcion": func_maquinaria,
         "ubicacion_jugador": (0, textura_maquinaria.height / 2 + 5),
-    }
+    },
+    {
+        "nombre": "porton",
+        "textura": textura_porton,
+        "x": 120 * FACTOR_ESCALAR,
+        "y": 360 * FACTOR_ESCALAR,
+        "funcion": func_porton,
+        "ubicacion_jugador": (textura_porton.width /4, -textura_porton.height / 2 - 5),
+    },
+    
 ]
 
 agua1 = escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas/agua1.png")) 
@@ -164,22 +206,30 @@ eliminadores = [
 ]
 
 salida = {
-    "x": 100 * FACTOR_ESCALAR,
-    "y": 500 * FACTOR_ESCALAR,
+    "x": 120 * FACTOR_ESCALAR,
+    "y": 475 * FACTOR_ESCALAR,
     "ancho": 100 * FACTOR_ESCALAR,
     "alto": 100 * FACTOR_ESCALAR,
     "funcion": lambda: print("saliendo")
 }
 
+
 class Sala_Tuberias(Sala):
     
     def __init__(self):
         super().__init__()
+        self.inventario.agregar_objeto("pinzas")
         super().Fondo(texturas_fondo_inicio)
         super().Colisiones(paredes)
         super().Interactuables(interactuables)
         super().Salida(salida["x"], salida["y"], salida["ancho"], salida["alto"], salida["funcion"])
         super().Eliminadores(eliminadores)
+        self.texto_inicial = "ya no puedo llegar a la puerta, el agua hizo contacto con los cables rotos..."
+
+
+    def InstanciarInterfaces(self, partida):
+        #instanciar los objetos de las interfaces
+        self.armario = ArmarioInterfaz(partida)
     
     def ValvulasResuelto(self):
         self.lista_eliminadores.pop(-1)
@@ -188,3 +238,10 @@ class Sala_Tuberias(Sala):
     def PanelResuelto(self):
         self.lista_eliminadores.pop(-1)
         super().Fondo(texturas_post_panel)
+    
+    def PortonAbierto(self):
+        for objeto in self.lista_bloqueos:
+            if isinstance(objeto, Interactuable) and objeto.nombre == "porton":
+                self.lista_bloqueos.remove(objeto)
+        
+        super().Fondo(texturas_post_porton)

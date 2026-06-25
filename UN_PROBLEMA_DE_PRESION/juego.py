@@ -2,6 +2,7 @@ import arcade
 import os, math
 from clases.salas.sala_base import Interactuable, Objeto
 from clases.personajes.ingeniero import Ingeniero
+from configuraciones import Constantes as consts
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 SCREEN_TITLE = "Sala 1 - Mapa Animado Dinámico"
@@ -11,6 +12,8 @@ class JuegoView(arcade.View):
     def __init__(self, sala_instanciada):
         super().__init__()
         self.sala = sala_instanciada
+        self.texto_inicial = False
+        self.sala.InstanciarInterfaces(self)
         
         # En el __init__ solo definimos las propiedades vacías
         self.jugador = None
@@ -26,19 +29,52 @@ class JuegoView(arcade.View):
         self.current_bg_index = 0
         self.bg_timer = 0.0
 
+        # variables para la logica de la caja de texto emergente
+        self.mostrar_cuadro_texto = False
+        self.texto_completo = ""       # El texto total que queremos mostrar
+        self.texto_actual = ""         # Lo que se va escribiendo en pantalla poco a poco
+        self.indice_letra = 0          # En qué letra del string vamos
+        
+        # Temporizadores para las letras
+        self.temporizador_letra = 0.0
+        self.VELOCIDAD_TEXTO = 0.03    # Tiempo en segundos entre cada letra (0.03 es ideal)
+        
+        # El objeto de texto de Arcade
+        self.interfaz_texto = None
+        self.interactuando = False
+
     def on_show_view(self):
         """ 
         MÉTODO CRÍTICO: Se ejecuta cuando el menú hace el cambio a esta vista.
         Aquí la ventana ya existe de forma activa, por lo que es seguro cargar personajes y físicas.
         """
         # Instanciamos al jugador y su lista de sprites de forma segura
-        self.jugador = Ingeniero(center_x=self.sala.ancho/2, center_y=self.sala.alto/2)
+        if not self.jugador:
+            self.jugador = Ingeniero(center_x=self.sala.ancho/2, center_y=self.sala.alto/2)
         self.jugador_lista = arcade.SpriteList()
         self.jugador_lista.append(self.jugador)
 
         # Inicializamos el motor de física con la sala ya cargada
         self.motor_fisica = arcade.PhysicsEngineSimple(self.jugador, self.sala.lista_bloqueos)
 
+        # Inicializamos el objeto de texto en la parte inferior de la ventana
+        self.interfaz_texto = arcade.Text(
+            text="",
+            x=80,                          # Margen izquierdo para que no toque el borde de la pantalla
+            y=110,                         # Altura interna de la caja de texto
+            color=arcade.color.WHITE,
+            font_size=20,
+            font_name="Courier New",             
+            bold=True,
+            multiline=True,
+            width=self.window.width - 160        # Se adapta al ancho de tu pantalla automáticamente
+        )
+
+        self.interactuando = False
+
+        if not self.texto_inicial:
+            self.mostrar_texto(self.sala.texto_inicial)
+            self.texto_inicial = True
 
     """   CONTROL DE MOVIMIENTO COMBINADO    """
 
@@ -75,6 +111,12 @@ class JuegoView(arcade.View):
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
         if button == arcade.MOUSE_BUTTON_LEFT:
+
+            if self.mostrar_cuadro_texto:
+                 # Si ya se terminó de escribir todo el texto
+                if self.indice_letra >= len(self.texto_completo):
+                    self.mostrar_cuadro_texto = False  # Oculta la caja y deja seguir jugando
+
             self.moviéndose_por_click = True
 
             # 1. Detectar si el clic colisionó con algún mueble interactuable
@@ -99,6 +141,15 @@ class JuegoView(arcade.View):
 
 
     """  LÓGICA DE JUEGO Y DIBUJADO    """
+
+    def mostrar_texto(self, mensaje_nuevo):
+        """ Configura y arranca la animación de letras desde cero """
+        self.texto_completo = mensaje_nuevo
+        self.texto_actual = ""
+        self.indice_letra = 0
+        self.temporizador_letra = 0.0
+        self.interfaz_texto.text = ""
+        self.mostrar_cuadro_texto = True
 
     def on_update(self, delta_time: float):
         #actualizar temporizador de la animación del fondo
@@ -127,10 +178,10 @@ class JuegoView(arcade.View):
         if salida_alcanzada:
             print("HAS SALIDOOOO")
 
-            from menu import MenuView
+            from victoria import VictoriaView
 
-            vista_menu = MenuView()
-            self.window.show_view(vista_menu)
+            vista_victoria = VictoriaView()
+            self.window.show_view(vista_victoria)
             return
 
         # LÓGICA DE CONTROL DE MOVIMIENTO COMBINADO
@@ -154,10 +205,10 @@ class JuegoView(arcade.View):
             self.jugador.change_x = 0
             self.jugador.change_y = 0
         
-        # 2. Actualizar física (por si choca con un muro invisible mientras camina)
+        # Actualizar física (por si choca con un muro invisible mientras camina)
         self.motor_fisica.update()
         
-        # 3. TRUCO DE CONTROL: Verificar si estamos cerca del objeto interactuable
+        # TRUCO DE CONTROL: Verificar si estamos cerca del objeto interactuable
         if self.objeto_objetivo is not None:
             
             if self.objetivo_alcanzado:  # Si estamos lo suficientemente cerca del objetivo
@@ -169,11 +220,27 @@ class JuegoView(arcade.View):
                 self.moviéndose_por_click = False
                 self.jugador.change_x = 0
                 self.jugador.change_y = 0
+        
+        # ANIMACIÓN DE TEXTO GRADUAL (MÁQUINA DE ESCRIBIR)
+        if self.mostrar_cuadro_texto:
+            # Si todavía faltan letras por escribir del mensaje completo
+            if self.indice_letra < len(self.texto_completo):
+                self.temporizador_letra += delta_time
+                
+                # Cuando pasa el tiempo configurado, añadimos el siguiente caracter
+                if self.temporizador_letra >= self.VELOCIDAD_TEXTO:
+                    self.temporizador_letra = 0.0
+                    self.texto_actual += self.texto_completo[self.indice_letra]
+                    self.indice_letra += 1
+                    
+                    # Actualizamos el contenido visual del objeto de texto
+                    self.interfaz_texto.text = self.texto_actual
 
     def ejecutar_interaccion(self):
         # Aquí disparas la lógica del Escape Room
         print(f"Ejecutando función de interacción: {self.objeto_objetivo.funcion.__name__}")
-        self.objeto_objetivo.funcion(self.sala)
+        self.objeto_objetivo.funcion(self)
+
 
     def on_draw(self):
         self.clear()
@@ -186,6 +253,40 @@ class JuegoView(arcade.View):
         self.jugador_lista.draw()
 
         self.sala.lista_salida.draw()
+
+        if self.mostrar_cuadro_texto:
+            ancho_pantalla = self.window.width
+            
+            # Configuramos las coordenadas de la caja usando la esquina inferior izquierda como base
+            margen_izquierdo = 40
+            borde_inferior = 25
+            ancho_caja = ancho_pantalla - 80
+            alto_caja = 110
+
+            # 1. Fondo de la caja (Left, Bottom, Width, Height)
+            arcade.draw_lbwh_rectangle_filled(
+                left=margen_izquierdo,
+                bottom=borde_inferior,
+                width=ancho_caja,
+                height=alto_caja,
+                color=(15, 15, 15, 230)
+            )
+            
+            # 2. Borde de la caja
+            arcade.draw_lbwh_rectangle_outline(
+                left=margen_izquierdo,
+                bottom=borde_inferior,
+                width=ancho_caja,
+                height=alto_caja,
+                color=arcade.color.WHITE,
+                border_width=3
+            )
+            
+            # 3. Renderizar las letras que se están escribiendo
+            if self.interfaz_texto:
+                self.interfaz_texto.draw()
+
+                
     
     def _verificar_bloqueo(self, sprite):
 

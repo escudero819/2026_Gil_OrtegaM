@@ -1,7 +1,11 @@
 import arcade
 from filtro import modo_filtro
 
+<<<<<<< HEAD
 class modo_pausa:
+=======
+class PauseManager():
+>>>>>>> 2b53ecc (primera interaccion conseguida: armario.)
 
     def __init__(self, titulo="PAUSA", pausa=False, color_superposicion=(100, 100, 100, 160)):
         self.tateQuieto = pausa

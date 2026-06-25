@@ -3,7 +3,6 @@
 """
 
 import os, arcade, time
-from menu import MenuView
 from configuraciones import Constantes as const
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -19,9 +18,6 @@ class Game_Over(arcade.View):
         self.bandera_texto = time.time()
         self.TIEMPO_PARA_APARECER = 3.0  # Aparecerá a los 3 segundos
         self.VELOCIDAD_FADE = 150
-        self.timer_texto = 0.0
-
-        self.texto_explicativo = None
         self.alpha_actual = 0
         self.mostrar_texto = False
 
