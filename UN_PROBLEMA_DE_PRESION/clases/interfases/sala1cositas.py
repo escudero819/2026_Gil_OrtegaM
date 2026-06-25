@@ -9,7 +9,6 @@ screen = display.get_default_screen()
 ANCHO_VENTANA = screen.width
 ALTO_VENTANA = screen.height
 
-<<<<<<< HEAD
 def rotar_punto(x, y, cx, cy, ang):
     dx = x - cx
     dy = y - cy
@@ -19,9 +18,6 @@ def rotar_punto(x, y, cx, cy, ang):
     )
 
 class MiVentana(arcade.Window):
-=======
-class MiVentana(arcade.View):
->>>>>>> 2b53ecc (primera interaccion conseguida: armario.)
     def __init__(self):
         super().__init__(ANCHO_VENTANA // 5 * 3, ALTO_VENTANA // 5 * 3, "Mi Ventana")
         arcade.set_background_color(arcade.color.WHITE)
