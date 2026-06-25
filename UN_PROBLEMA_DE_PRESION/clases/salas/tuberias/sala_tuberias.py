@@ -106,6 +106,7 @@ def func_valvulas(partida):
 def func_panel(partida):
     print("Has interactuado con el panel.")
     sala = partida.sala
+    partida.view
     if sala.inventario.consultar("herramientas"):
         sala.PanelResuelto()
         mensaje = "Vamos!!! He conseguido arreglar los cables!"
