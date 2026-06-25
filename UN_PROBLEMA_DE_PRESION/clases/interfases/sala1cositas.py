@@ -41,9 +41,6 @@ class MiVentana(arcade.Window):
             self.angulo += math.radians(90) * delta_time
             self.angulo %= math.pi * 2
 
-    def on_view(self):
-        pass
-
     def on_draw(self):
         self.clear()
         self.filter.dibujar()
@@ -85,9 +82,8 @@ class MiVentana(arcade.Window):
         # nada más que actualizar para pause (no mantiene tamaño)
 
 def main():
-    window = arcade.Window(ANCHO_VENTANA, ALTO_VENTANA, "prueba de interfaz")
     ventana = MiVentana()
-    window.show_view(ventana)
+    ventana.run()
 
 if __name__ == "__main__":
     main()
