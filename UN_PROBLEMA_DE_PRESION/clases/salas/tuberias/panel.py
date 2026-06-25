@@ -1,4 +1,4 @@
-import arcade, os
+import arcade, os, time
 from configuraciones import Constantes as const
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -22,7 +22,7 @@ class PanelInterfaz(arcade.View):
         self.fondo = None
         self.parpadeo = 3
         self.fondo_parpadeo = False
-        self.timer = 0.0
+        self.timer = time.time()
     
     def cambiar_fondo(self, fondo):
         self.fondo = fondo
@@ -37,8 +37,13 @@ class PanelInterfaz(arcade.View):
         if self.lista_fondo:
             self.lista_fondo.pop()
         self.lista_fondo.append(fondo)
-    
-    
+
+    def _colocar_elem(self):
+        elementos = arcade.Sprite(transparente, center_x= self.centro_x, center_y= self.centro_y)
+        elementos.width = 50
+        elementos.height = 50
+        self.lista_interaccion.append(elementos)
+
     def on_show_view(self):
         self.lista_fondo = arcade.SpriteList()
         self.lista_interaccion = arcade.SpriteList()
@@ -54,11 +59,9 @@ class PanelInterfaz(arcade.View):
         self.lista_fondo.draw()
         self.lista_interaccion.draw()
     
-    def on_update(self, delta_time: float):
+    def on_update(self):
         if self.estado == "sin_elem":
-            self.timer += delta_time
-
-            if self.timer >= self.parpadeo:
+            if time.time() - self.timer >= self.parpadeo:
                 if self.fondo_parpadeo:
                     self.cambiar_fondo(sin_elementos_1)
                     self.fondo_parpadeo = False
@@ -73,7 +76,8 @@ class PanelInterfaz(arcade.View):
                     if self.sala.inventario.consultar("cables"):
                         #cambiar
                         self.lista_interaccion.clear()
-                        self.estado = "prendida"
+                        self.cambiar_fondo()
+                        self.estado = "con_elem"
                     else:
                         mensaje = "no tengo con que trabajar"
                         self.partida.mostrar_texto(mensaje)

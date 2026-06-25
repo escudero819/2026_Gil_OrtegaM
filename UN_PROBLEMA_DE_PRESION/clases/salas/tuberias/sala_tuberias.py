@@ -1,6 +1,7 @@
 from clases.salas.tuberias.armario import ArmarioInterfaz
 from clases.salas.tuberias.maquinaria import MaquinariaInterfaz
 from clases.salas.tuberias.computadoras import PCInterfaz
+from clases.salas.tuberias.panel import PanelInterfaz
 from ..sala_base import Sala, Interactuable
 import os
 import arcade
@@ -106,14 +107,7 @@ def func_valvulas(partida):
 def func_panel(partida):
     print("Has interactuado con el panel.")
     sala = partida.sala
-    partida.view
-    if sala.inventario.consultar("herramientas"):
-        sala.PanelResuelto()
-        mensaje = "Vamos!!! He conseguido arreglar los cables!"
-        partida.mostrar_texto(mensaje)
-    else:
-        mensaje = "para arreglar esto necesito cables y herramientas, suelen estar en el armario"
-        partida.mostrar_texto(mensaje)
+    partida.window.show_view(sala.panel)
 
 def func_comp_der(partida):
     print("Has interactuado con la computadora der")
@@ -239,7 +233,8 @@ class Sala_Tuberias(Sala):
         self.armario = ArmarioInterfaz(partida)
         self.maquinaria = MaquinariaInterfaz(partida)
         self.pc_izq = PCInterfaz(partida, "izq")     
-        self.pc_der = PCInterfaz(partida, "der")     
+        self.pc_der = PCInterfaz(partida, "der")  
+        self.panel = PanelInterfaz(partida)   
     
     def ValvulasResuelto(self):
         self.lista_eliminadores.pop(-1)
