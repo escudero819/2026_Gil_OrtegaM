@@ -1,4 +1,6 @@
 from clases.salas.tuberias.armario import ArmarioInterfaz
+from clases.salas.tuberias.maquinaria import MaquinariaInterfaz
+from clases.salas.tuberias.computadoras import PCInterfaz
 from ..sala_base import Sala, Interactuable
 import os
 import arcade
@@ -112,14 +114,20 @@ def func_panel(partida):
         mensaje = "para arreglar esto necesito cables y herramientas, suelen estar en el armario"
         partida.mostrar_texto(mensaje)
 
-def func_comp1(partida):
-    print("Has interactuado con la computadora izq")
-
-def func_comp2(partida):
+def func_comp_der(partida):
     print("Has interactuado con la computadora der")
+    sala = partida.sala
+    partida.window.show_view(sala.pc_der)
+
+def func_comp_izq(partida):
+    print("Has interactuado con la computadora izq")
+    sala = partida.sala
+    partida.window.show_view(sala.pc_izq)
 
 def func_maquinaria(partida):
     print("Has interactuado con la maqinaria")
+    sala = partida.sala
+    partida.window.show_view(sala.maquinaria)
 
 def func_armario(partida):
     print("has interactuado con el armario")
@@ -147,19 +155,19 @@ interactuables = [
         "ubicacion_jugador": (textura_panel.width/2 +10, 0),
     },
     {
-        "nombre": "computadora1",
+        "nombre": "computadora_der",
         "textura": textura_computadora,
         "x": 165 * FACTOR_ESCALAR,
         "y": 70 * FACTOR_ESCALAR,
-        "funcion": func_comp1,
+        "funcion": func_comp_der,
         "ubicacion_jugador": (0, textura_computadora.height / 2 + 5),
     },
     {
-        "nombre": "computadora2",
+        "nombre": "computadora_izq",
         "textura": textura_computadora,
         "x": 425 * FACTOR_ESCALAR,
         "y": 70 * FACTOR_ESCALAR,
-        "funcion": func_comp2,
+        "funcion": func_comp_izq,
         "ubicacion_jugador": (0, textura_computadora.height / 2 + 5),
     },
     {
@@ -218,18 +226,19 @@ class Sala_Tuberias(Sala):
     
     def __init__(self):
         super().__init__()
-        self.inventario.agregar_objeto("pinzas")
         super().Fondo(texturas_fondo_inicio)
         super().Colisiones(paredes)
         super().Interactuables(interactuables)
         super().Salida(salida["x"], salida["y"], salida["ancho"], salida["alto"], salida["funcion"])
         super().Eliminadores(eliminadores)
-        self.texto_inicial = "ya no puedo llegar a la puerta, el agua hizo contacto con los cables rotos..."
-
+        self.texto_inicial = '"ya no puedo llegar a la puerta, el agua hizo contacto con los cables rotos..."'
 
     def InstanciarInterfaces(self, partida):
         #instanciar los objetos de las interfaces
         self.armario = ArmarioInterfaz(partida)
+        self.maquinaria = MaquinariaInterfaz(partida)
+        self.pc_izq = PCInterfaz(partida, "izq")     
+        self.pc_der = PCInterfaz(partida, "der")     
     
     def ValvulasResuelto(self):
         self.lista_eliminadores.pop(-1)

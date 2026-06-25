@@ -41,7 +41,6 @@ class JuegoView(arcade.View):
         
         # El objeto de texto de Arcade
         self.interfaz_texto = None
-        self.interactuando = False
 
     def on_show_view(self):
         """ 
@@ -70,8 +69,7 @@ class JuegoView(arcade.View):
             width=self.window.width - 160        # Se adapta al ancho de tu pantalla automáticamente
         )
 
-        self.interactuando = False
-
+        # vemos si hay que decir el texto inicial de la zona
         if not self.texto_inicial:
             self.mostrar_texto(self.sala.texto_inicial)
             self.texto_inicial = True
@@ -240,7 +238,6 @@ class JuegoView(arcade.View):
         # Aquí disparas la lógica del Escape Room
         print(f"Ejecutando función de interacción: {self.objeto_objetivo.funcion.__name__}")
         self.objeto_objetivo.funcion(self)
-
 
     def on_draw(self):
         self.clear()
