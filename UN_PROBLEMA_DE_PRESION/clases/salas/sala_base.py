@@ -94,6 +94,7 @@ class Sala():
 
         # Como el inventario sera por sala aprevechamos y tendremos dicha info en esta clase
         self.inventario = Inventario()
+        self.inventario.agregar_objeto("cables")
     
     def Fondo(self, texturas_fondo: list[arcade.Texture]):
         if self.fondo_lista:

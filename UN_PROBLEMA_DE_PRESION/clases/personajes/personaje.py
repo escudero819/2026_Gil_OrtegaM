@@ -118,5 +118,7 @@ class Player(arcade.Sprite):
         else:
             self.change_x = 0
             self.change_y = 0
+            self.center_x = self.destino_x
+            self.center_y = self.destino_y
             self.texture = self.texturas_idle[self.direccion]
             return True # Llegamos al destino

@@ -186,7 +186,7 @@ class ArmarioInterfaz(arcade.View):
                         self.estado = "abierto"
                     else:
                         self.cambiar_fondo(fondo_sin_objetos)
-                        self.sala.inventario.agregar_objeto("herramientas")
+                        self.sala.inventario.agregar_objeto("cables")
                         mensaje = "has conseguido cables y guantes"
                         self.mostrar_texto(mensaje)
                         self._sin_obj()

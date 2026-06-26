@@ -211,13 +211,13 @@ class JuegoView(arcade.View):
             
             if self.objetivo_alcanzado:  # Si estamos lo suficientemente cerca del objetivo
                 print(f"Interacción con {self.objeto_objetivo.nombre}")
-                self.ejecutar_interaccion()  # Ejecutamos la función de interacción del objeto
-                self.objeto_objetivo = None # Ya interactuó, vaciamos el objetivo
                 self.objetivo_alcanzado = False # Reseteamos el estado de objetivo alcanzado
                 # Frenamos al jugador en el sitio
                 self.moviéndose_por_click = False
                 self.jugador.change_x = 0
                 self.jugador.change_y = 0
+                self.ejecutar_interaccion()  # Ejecutamos la función de interacción del objeto
+                self.objeto_objetivo = None # Ya interactuó, vaciamos el objetivo
         
         # ANIMACIÓN DE TEXTO GRADUAL (MÁQUINA DE ESCRIBIR)
         if self.mostrar_cuadro_texto:
