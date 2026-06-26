@@ -27,10 +27,10 @@ NODOS_DERECHA = {
 
 # La solución del puzzle (qué figura va con qué letra)
 SOLUCION_CORRECTA = {
-    "triangulo": "A",
-    "cuadrado":  "C",
-    "circulo":   "D",
-    "rombo":     "B"
+    "triangulo": "D",
+    "cuadrado":  "B",
+    "circulo":   "A",
+    "rombo":     "C"
 }
 class PanelInterfaz(arcade.View):
 
@@ -85,8 +85,9 @@ class PanelInterfaz(arcade.View):
 
         # ¡SI PASÓ EL BUCLE, GANÓ!
         print("¡Puzzle Completado con Éxito! Presión regulada.")
-        # Aquí disparas el diálogo estilo Pokémon que programamos antes:
-        # self.disparar_dialogo("¡Excelente! Los cables han sido puenteados. Presión estabilizada.")
+        mensaje = '"vamos!!! eh logrado arreglar el panel!"'
+        self.partida.mostrar_texto(mensaje)
+        self.sala.PanelResuelto()
 
     def _colocar_elem(self):
         self.lista_interaccion.clear()
@@ -215,6 +216,10 @@ class PanelInterfaz(arcade.View):
                 self._botones()
                 self.estado = "cortados"
             else:
+                cable_clickeado = arcade.get_sprites_at_point((x,y), self.lista_cables)
+                if cable_clickeado:
+                    self.lista_cables.remove(cable_clickeado[0])
+                    return
                 # --- 1. VERIFICAR CLICKS EN LA IZQUIERDA (FIGURAS) ---
                 for figura, lista_boton in self.sprites_botones_izq.items():
                     # Creamos una caja invisible de colisión de 60x60 píxeles alrededor del nodo
