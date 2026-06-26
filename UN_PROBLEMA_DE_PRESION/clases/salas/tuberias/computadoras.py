@@ -7,7 +7,7 @@ derecha_apagada = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/compu
 derecha_prendida = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/computadoras/der/prendida.png")
 izquierda_apagada = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/computadoras/izq/apagada.png")
 izquierda_prendida = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/computadoras/izq/prendida.png")
-transparente = arcade.load_texture(os.path.join(CURRENT_PATH, "..", "semitransparente_rojo.png"))
+transparente = arcade.load_texture(os.path.join(CURRENT_PATH, "..", "transparente.png"))
 
 class PCInterfaz(arcade.View):
 

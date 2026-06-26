@@ -3,7 +3,7 @@ import os
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))   
 
-Colisiones_Transparentes = False
+Colisiones_Transparentes = True
 
 class Objeto(arcade.Sprite):
 
@@ -94,7 +94,6 @@ class Sala():
 
         # Como el inventario sera por sala aprevechamos y tendremos dicha info en esta clase
         self.inventario = Inventario()
-        self.inventario.agregar_objeto("cables")
     
     def Fondo(self, texturas_fondo: list[arcade.Texture]):
         if self.fondo_lista:

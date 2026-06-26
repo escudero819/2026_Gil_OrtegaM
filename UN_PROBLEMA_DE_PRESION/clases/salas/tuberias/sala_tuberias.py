@@ -2,6 +2,7 @@ from clases.salas.tuberias.armario import ArmarioInterfaz
 from clases.salas.tuberias.maquinaria import MaquinariaInterfaz
 from clases.salas.tuberias.computadoras import PCInterfaz
 from clases.salas.tuberias.panel import PanelInterfaz
+from clases.salas.tuberias.valvulas import ValvulasInterfaz
 from ..sala_base import Sala, Interactuable
 import os
 import arcade
@@ -100,10 +101,7 @@ textura_porton = escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas/i
 def func_valvulas(partida):
     print("Has interactuado con las válvulas.")
     sala = partida.sala
-    sala.ValvulasResuelto()
-    mensaje = "Perfecto, ahora puedo alcanzar el armario"
-    partida.mostrar_texto(mensaje)
-
+    partida.window.show_view(sala.valvulas)
 def func_panel(partida):
     print("Has interactuado con el panel.")
     sala = partida.sala
@@ -235,6 +233,7 @@ class Sala_Tuberias(Sala):
         self.pc_izq = PCInterfaz(partida, "izq")     
         self.pc_der = PCInterfaz(partida, "der")  
         self.panel = PanelInterfaz(partida)   
+        self.valvulas = ValvulasInterfaz(partida)
     
     def ValvulasResuelto(self):
         self.lista_eliminadores.pop(-1)

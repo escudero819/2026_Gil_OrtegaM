@@ -5,7 +5,7 @@ CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 fondo_con_pinzas = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/maquinaria/con_pinzas.png")
 fondo_sin_pinzas = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/maquinaria/sin_pinzas.png")
-transparente = arcade.load_texture(os.path.join(CURRENT_PATH, "..", "semitransparente_rojo.png"))
+transparente = arcade.load_texture(os.path.join(CURRENT_PATH, "..", "transparente.png"))
 
 class MaquinariaInterfaz(arcade.View):
     def __init__(self, partida):

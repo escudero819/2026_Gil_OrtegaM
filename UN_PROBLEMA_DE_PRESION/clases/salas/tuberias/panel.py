@@ -57,6 +57,7 @@ class PanelInterfaz(arcade.View):
         self.botones_cargados = False
     
     def cambiar_fondo(self, fondo):
+        self.fondo = fondo
         fondo = arcade.Sprite(fondo)
         factor_y = const.alto_interfaces / fondo.height 
         factor_x = const.ancho_interfaces/ fondo.width
@@ -65,7 +66,6 @@ class PanelInterfaz(arcade.View):
         fondo.width = fondo.width * factor
         fondo.center_x = self.centro_x
         fondo.center_y = self.centro_y
-        self.fondo = fondo
         if self.lista_fondo:
             self.lista_fondo.clear()
         self.lista_fondo.append(fondo)
@@ -174,12 +174,28 @@ class PanelInterfaz(arcade.View):
                 for lista in self.sprites_botones_der.values():
                     lista.draw()
 
-                    # 2. Dibujamos los cables que el jugador ya conectó
+                # --- RECORREMOS LAS CONEXIONES HECHAS PARA DIBUJAR LOS CÍRCULOS ---
                 for figura, letra in self.conexiones_hechas.items():
-                    # Opcional: Dibujar un pequeño círculo en los extremos para que parezca una soldadura/pinza
-                    #arcade.draw_circle_filled(punto_inicio[0] - 25, punto_inicio[1], 30, arcade.color.YELLOW_GREEN)
-                    #arcade.draw_circle_filled(punto_fin[0] + 25, punto_fin[1], 30, arcade.color.YELLOW_GREEN)
-                    pass
+                    # SOLUCIÓN: Buscamos las coordenadas reales usando los diccionarios globales
+                    punto_inicio = NODOS_IZQUIERDA[figura]
+                    punto_fin = NODOS_DERECHA[letra]
+                    
+                    # Dibujamos el círculo del extremo izquierdo (Figura)
+                    # Ajusté el radio a 6 y removí el desfase de -25 para que coincida justo en la punta
+                    arcade.draw_circle_filled(
+                        center_x=punto_inicio[0] - 5, 
+                        center_y=punto_inicio[1], 
+                        radius=15, 
+                        color=arcade.color.COPPER_RED
+                    )
+                    
+                    # Dibujamos el círculo del extremo derecho (Letra)
+                    arcade.draw_circle_filled(
+                        center_x=punto_fin[0] + 5, 
+                        center_y=punto_fin[1], 
+                        radius=15, 
+                        color=arcade.color.COPPER_RED
+                    )
 
                 # 3. Retroalimentación visual: Si seleccionó una figura, hacemos que "brille" su punta
                 if self.seleccion_izquierda:

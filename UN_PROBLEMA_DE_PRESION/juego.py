@@ -20,10 +20,12 @@ class JuegoView(arcade.View):
         self.jugador_lista = None
         self.motor_fisica = None
         
+        
         # Estado de la interacción
         self.objeto_objetivo = None
         self.moviéndose_por_click = False
         self.objetivo_alcanzado = False
+        self.listo_para_interactuar = False
 
         # Integración de la animación de fondo
         self.current_bg_index = 0
@@ -114,6 +116,7 @@ class JuegoView(arcade.View):
                  # Si ya se terminó de escribir todo el texto
                 if self.indice_letra >= len(self.texto_completo):
                     self.mostrar_cuadro_texto = False  # Oculta la caja y deja seguir jugando
+                    return
 
             self.moviéndose_por_click = True
 
@@ -206,18 +209,28 @@ class JuegoView(arcade.View):
         # Actualizar física (por si choca con un muro invisible mientras camina)
         self.motor_fisica.update()
         
-        # TRUCO DE CONTROL: Verificar si estamos cerca del objeto interactuable
         if self.objeto_objetivo is not None:
             
-            if self.objetivo_alcanzado:  # Si estamos lo suficientemente cerca del objetivo
-                print(f"Interacción con {self.objeto_objetivo.nombre}")
-                self.objetivo_alcanzado = False # Reseteamos el estado de objetivo alcanzado
-                # Frenamos al jugador en el sitio
+            if self.objetivo_alcanzado:  
+                # PASO 1: En este frame frenamos al jugador y dejamos que se aplique la textura Idle
                 self.moviéndose_por_click = False
                 self.jugador.change_x = 0
                 self.jugador.change_y = 0
-                self.ejecutar_interaccion()  # Ejecutamos la función de interacción del objeto
-                self.objeto_objetivo = None # Ya interactuó, vaciamos el objetivo
+                
+                # Activamos una nueva bandera interna para indicar que el juego ya lo registró quieto
+                self.listo_para_interactuar = True
+                self.objetivo_alcanzado = False # Apagamos para que no vuelva a entrar aquí
+                
+        # PASO 2: En el frame de actualización SUCESIVO (cuando el anterior ya se dibujó en pantalla)
+        # disparamos la interfaz emergente de forma limpia
+        if getattr(self, 'listo_para_interactuar', False):
+            self.listo_para_interactuar = False # Reseteamos la bandera
+            
+            mueble_actual = self.objeto_objetivo
+            self.objeto_objetivo = None 
+            
+            print(f"Ejecutando función de interacción: {mueble_actual.funcion.__name__}")
+            mueble_actual.funcion(self)      
         
         # ANIMACIÓN DE TEXTO GRADUAL (MÁQUINA DE ESCRIBIR)
         if self.mostrar_cuadro_texto:
@@ -234,10 +247,10 @@ class JuegoView(arcade.View):
                     # Actualizamos el contenido visual del objeto de texto
                     self.interfaz_texto.text = self.texto_actual
 
-    def ejecutar_interaccion(self):
+    def ejecutar_interaccion(self, interactuable):
         # Aquí disparas la lógica del Escape Room
-        print(f"Ejecutando función de interacción: {self.objeto_objetivo.funcion.__name__}")
-        self.objeto_objetivo.funcion(self)
+        print(f"Ejecutando función de interacción: {interactuable.funcion.__name__}")
+        interactuable.funcion(self)
 
     def on_draw(self):
         self.clear()

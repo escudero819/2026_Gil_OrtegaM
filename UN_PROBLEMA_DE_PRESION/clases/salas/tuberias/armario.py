@@ -7,7 +7,7 @@ fondo_con_candado = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/arm
 fondo_sin_candado = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/armario/sin_candado.png")
 fondo_abierto = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/armario/abierto.png")
 fondo_sin_objetos = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/armario/sin_objetos.png")
-transparente = arcade.load_texture(os.path.join(CURRENT_PATH, "..", "semitransparente_rojo.png"))
+transparente = arcade.load_texture(os.path.join(CURRENT_PATH, "..", "transparente.png"))
 
 class ArmarioInterfaz(arcade.View):
     def __init__(self, partida):
@@ -61,7 +61,7 @@ class ArmarioInterfaz(arcade.View):
         self.lista_interaccion.append(puertas)
     
     def _abierto(self):
-        objetos = arcade.Sprite(transparente, center_x=self.centro_x, center_y= self.centro_y + self.fondo.height/8)
+        objetos = arcade.Sprite(transparente, center_x=self.centro_x, center_y= self.centro_y + self.fondo.height/8 - 40)
         objetos.width = self.fondo.height / 2
         objetos.height = 200
         if self.lista_interaccion:

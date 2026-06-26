@@ -95,30 +95,35 @@ class Player(arcade.Sprite):
         dy = self.destino_y - self.center_y
         distancia = math.sqrt(dx**2 + dy**2)
 
-        # Si estamos lo suficientemente cerca del punto destino, nos detenemos por completo
-        if distancia > 5:
-            # Conseguimos un movimiento fluido usando vectores unitarios multiplicados por la velocidad
-            self.change_x = (dx / distancia) * PLAYER_SPEED_AUTOMATICO
-            self.change_y = (dy / distancia) * PLAYER_SPEED_AUTOMATICO
-
-            if abs(self.change_x) >= abs(self.change_y):
-                if self.change_x > 0:
-                    self.direccion = "derecha"
-                else:
-                    self.direccion = "izquierda"
-            else:
-                if self.change_y > 0:
-                    self.direccion = "arriba"
-                else:
-                    self.direccion = "abajo"
-            
-            self.actualizar_animacion()
-
-            return False # Aún no llegamos al destino
-        else:
+        # Si estamos lo suficientemente cerca (umbral mínimo de tolerancia)
+        if distancia <= 10:
             self.change_x = 0
             self.change_y = 0
-            self.center_x = self.destino_x
-            self.center_y = self.destino_y
-            self.texture = self.texturas_idle[self.direccion]
-            return True # Llegamos al destino
+            self.texture = self.texturas_idle[self.direccion if self.direccion else "abajo"]
+            return True # Llegamos al destino de forma absoluta
+
+        # AJUSTE SUAVE: Si está a menos de 10 píxeles, reducimos la velocidad 
+        # para que no impacte ni traspase la hitbox del objeto
+        if distancia < 20:
+            velocidad_actual = 2.0  # Velocidad de aproximación milimétrica
+        else:
+            velocidad_actual = PLAYER_SPEED_AUTOMATICO
+
+        # Conseguimos un movimiento fluido usando vectores unitarios multiplicados por la velocidad ajustada
+        self.change_x = (dx / distancia) * velocidad_actual
+        self.change_y = (dy / distancia) * velocidad_actual
+
+        # Determinar dirección para la animación (se mantiene igual)
+        if abs(self.change_x) >= abs(self.change_y):
+            if self.change_x > 0:
+                self.direccion = "derecha"
+            else:
+                self.direccion = "izquierda"
+        else:
+            if self.change_y > 0:
+                self.direccion = "arriba"
+            else:
+                self.direccion = "abajo"
+        
+        self.actualizar_animacion()
+        return False # Aún en movimiento
