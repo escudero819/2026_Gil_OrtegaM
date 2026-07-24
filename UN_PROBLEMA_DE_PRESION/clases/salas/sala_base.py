@@ -1,5 +1,6 @@
 import arcade
 import os
+import time
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))   
 
@@ -94,6 +95,9 @@ class Sala():
 
         # Como el inventario sera por sala aprevechamos y tendremos dicha info en esta clase
         self.inventario = Inventario()
+
+        self.contador = time.time()
+        self.tiempo_maximo = 480
     
     def Fondo(self, texturas_fondo: list[arcade.Texture]):
         if self.fondo_lista:
@@ -133,3 +137,7 @@ class Sala():
         self.fondo_lista.draw()
         self.interactuables_sprites.draw()
         self.lista_bloqueos.draw()
+
+    def VerificarDerrota(self):
+        if time.time() - self.contador > self.tiempo_maximo:
+            return (True, "tiempo")

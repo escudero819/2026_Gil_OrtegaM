@@ -64,7 +64,7 @@ class VictoriaView(arcade.View):
         
         from menu import MenuView
 
-        vista_menu = MenuView
+        vista_menu = MenuView()
 
         self.window.show_view(vista_menu)
         return

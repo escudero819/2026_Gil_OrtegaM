@@ -4,7 +4,7 @@ Lógica del Menú Principal - Un Problema de Presión
 import os
 import arcade
 # Importamos la vista del juego y la sala correspondientes
-from juego import JuegoView
+from manager import Manager
 from clases.salas.tuberias.sala_tuberias import Sala_Tuberias
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__)) 
@@ -122,14 +122,12 @@ class MenuView(arcade.View):
     def comenzar_juego(self):
         """ Borra el menú por completo y carga la vista del juego limpia """
         print("-> Pasando al juego con una ventana vacía e independiente <-")
-        
-        # Instanciamos la sala y la vista del juego
-        sala = Sala_Tuberias()
-        vista_juego = JuegoView(sala)
+
+        manager = Manager()
         
         # Le decimos a la ventana principal que cambie de vista
         # Esto limpia automáticamente todo lo que MenuView estaba dibujando
-        self.window.show_view(vista_juego)
+        self.window.show_view(manager)
 
 def main(ventana=None):
     if not ventana:

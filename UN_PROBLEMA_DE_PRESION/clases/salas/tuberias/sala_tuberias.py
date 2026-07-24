@@ -225,6 +225,7 @@ class Sala_Tuberias(Sala):
         super().Salida(salida["x"], salida["y"], salida["ancho"], salida["alto"], salida["funcion"])
         super().Eliminadores(eliminadores)
         self.texto_inicial = '"ya no puedo llegar a la puerta, el agua hizo contacto con los cables rotos..."'
+        self.posicion_inicial = (ANCHO / 2, ALTO / 2)
 
     def InstanciarInterfaces(self, partida):
         #instanciar los objetos de las interfaces
@@ -249,3 +250,12 @@ class Sala_Tuberias(Sala):
                 self.lista_bloqueos.remove(objeto)
         
         super().Fondo(texturas_post_porton)
+    
+    def VerificarDerrota(self, jugador):
+        if arcade.check_for_collision_with_list(jugador, self.lista_eliminadores):
+            return (True, "El agua te alcanzó y te electrocutaste. ¡Has perdido!")
+        
+        tiempo_resultado = super().VerificarDerrota(jugador)
+        if tiempo_resultado:
+            return tiempo_resultado
+        

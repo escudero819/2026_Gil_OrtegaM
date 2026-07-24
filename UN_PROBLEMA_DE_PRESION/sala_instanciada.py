@@ -8,10 +8,11 @@ CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 SCREEN_TITLE = "Sala 1 - Mapa Animado Dinámico"
 velocidad_jugador_click = 7
 
-class JuegoView(arcade.View):
-    def __init__(self, sala_instanciada):
+class SalaActualView(arcade.View):
+    def __init__(self, sala_instanciada, manager):
         super().__init__()
         self.sala = sala_instanciada
+        self.manager = manager
         self.texto_inicial = False
         self.sala.InstanciarInterfaces(self)
         
@@ -50,7 +51,7 @@ class JuegoView(arcade.View):
         """
         # Instanciamos al jugador y su lista de sprites de forma segura
         if not self.jugador:
-            self.jugador = Ingeniero(center_x=self.sala.ancho/2, center_y=self.sala.alto/2)
+            self.jugador = Ingeniero(center_x=self.sala.posicion_inicial[0], center_y=self.sala.posicion_inicial[1])
         self.jugador_lista = arcade.SpriteList()
         self.jugador_lista.append(self.jugador)
 
@@ -177,11 +178,7 @@ class JuegoView(arcade.View):
 
         if salida_alcanzada:
             print("HAS SALIDOOOO")
-
-            from victoria import VictoriaView
-
-            vista_victoria = VictoriaView()
-            self.window.show_view(vista_victoria)
+            self.window.show_view(self.manager)
             return
 
         # LÓGICA DE CONTROL DE MOVIMIENTO COMBINADO
