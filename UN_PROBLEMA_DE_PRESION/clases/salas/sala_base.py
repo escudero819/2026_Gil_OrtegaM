@@ -1,7 +1,7 @@
 import arcade
 import os
 import time
-
+from configuraciones import Constantes as const
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))   
 
 Colisiones_Transparentes = True
@@ -98,6 +98,8 @@ class Sala():
 
         self.contador = time.time()
         self.tiempo_maximo = 480
+
+        self.correccion_x = None
     
     def Fondo(self, texturas_fondo: list[arcade.Texture]):
         if self.fondo_lista:
@@ -107,31 +109,32 @@ class Sala():
         self.fondo_lista.append(self.fondo_sprite)
         self.ancho = self.fondo_texturas[0].width
         self.alto = self.fondo_texturas[0].height
-        self.fondo_sprite.center_x = self.ancho/2
+        self.correccion_x = (const.ancho_ventana - self.ancho)/2
+        self.fondo_sprite.center_x = self.ancho/2 + self.correccion_x   
         self.fondo_sprite.center_y = self.alto/2
     
     def Colisiones(self, paredes: list[dict]):
 
         for colision in paredes:
-            pared = Bloqueo(int(colision["x"]), int(colision["y"]), int(colision["ancho"]), int(colision["alto"]))
+            pared = Bloqueo(int(colision["x"]) + self.correccion_x, int(colision["y"]), int(colision["ancho"]), int(colision["alto"]))
             self.lista_bloqueos.append(pared)
     
     def Interactuables(self, interactuables: list[dict]):
         
         for interactuable in interactuables:
             # Creamos el objeto que interactua y genera pantallas emergentes
-            objeto_interactuable = Interactuable(interactuable["nombre"], interactuable["textura"], interactuable["x"], interactuable["y"], funcion=interactuable["funcion"], ubicacion_jugador=interactuable.get("ubicacion_jugador"))
+            objeto_interactuable = Interactuable(interactuable["nombre"], interactuable["textura"], interactuable["x"] + self.correccion_x, interactuable["y"], funcion=interactuable["funcion"], ubicacion_jugador=interactuable.get("ubicacion_jugador"))
             self.lista_bloqueos.append(objeto_interactuable)
 
 
     def Salida(self, x, y, ancho, alto, funcion):
-        self.salida = Salida(x, y, ancho, alto, funcion)
+        self.salida = Salida(x + self.correccion_x, y, ancho, alto, funcion)
         self.lista_salida.append(self.salida)
     
     def Eliminadores(self, eliminadores):
         self.lista_eliminadores = arcade.SpriteList()
         for eliminador in eliminadores:
-            self.lista_eliminadores.append(Objeto("eliminador", imagen_path=eliminador["imagen"], center_x = eliminador["x"], center_y=eliminador["y"]))
+            self.lista_eliminadores.append(Objeto("eliminador", imagen_path=eliminador["imagen"], center_x = eliminador["x"] + self.correccion_x, center_y=eliminador["y"]))
 
     def draw(self):
         self.fondo_lista.draw()

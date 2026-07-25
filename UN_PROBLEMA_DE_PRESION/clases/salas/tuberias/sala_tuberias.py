@@ -6,8 +6,7 @@ from clases.salas.tuberias.valvulas import ValvulasInterfaz
 from ..sala_base import Sala, Interactuable
 import os
 import arcade
-ANCHO = 1280
-ALTO = 720
+from configuraciones import Constantes as const
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -15,8 +14,8 @@ fondo_inicio_1 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/electrific
 
 fondo_inicio_2 = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/electrificado2.png")
 
-FACTOR_X = ANCHO / fondo_inicio_1.width
-FACTOR_Y = ALTO / fondo_inicio_1.height
+FACTOR_X = const.ancho_ventana / fondo_inicio_1.width
+FACTOR_Y = const.alto_ventana / fondo_inicio_1.height
 FACTOR_ESCALAR = min(FACTOR_X, FACTOR_Y)
 ancho = fondo_inicio_1.width
 alto = fondo_inicio_1.height
@@ -225,7 +224,7 @@ class Sala_Tuberias(Sala):
         super().Salida(salida["x"], salida["y"], salida["ancho"], salida["alto"], salida["funcion"])
         super().Eliminadores(eliminadores)
         self.texto_inicial = '"ya no puedo llegar a la puerta, el agua hizo contacto con los cables rotos..."'
-        self.posicion_inicial = (ANCHO / 2, ALTO / 2)
+        self.posicion_inicial = (const.ancho_ventana / 2, const.alto_ventana / 2)
 
     def InstanciarInterfaces(self, partida):
         #instanciar los objetos de las interfaces

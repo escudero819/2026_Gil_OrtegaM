@@ -3,6 +3,7 @@ import time
 import cv2
 import threading
 from PIL import Image
+from clases.salas.almacen.sala_almacen import Sala_Almacen
 from clases.salas.tuberias.sala_tuberias import Sala_Tuberias
 from sala_instanciada import SalaActualView
 from configuraciones import Constantes as const
@@ -73,9 +74,9 @@ class Manager(arcade.View):
                     
                     if self.current_frame_index >= len(self.frames_texturas):
                         self.video_finished = True
-                        from victoria import VictoriaView
-                        victoria_view = VictoriaView()
-                        self.window.show_view(victoria_view)
+                        self.sala_actual = "almacen" # Reiniciamos para que no intente reproducir de nuevo
+                        self.sala = SalaActualView(Sala_Almacen(), self)
+                        self.window.show_view(self.sala)
 
     def on_draw(self):
         self.clear()
