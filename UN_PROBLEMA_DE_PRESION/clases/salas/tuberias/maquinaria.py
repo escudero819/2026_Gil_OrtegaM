@@ -1,35 +1,18 @@
 import arcade, os
 from configuraciones import Constantes as const
-
+from clases.salas.interaccion_base import InteraccionBase
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 fondo_con_pinzas = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/maquinaria/con_pinzas.png")
 fondo_sin_pinzas = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/maquinaria/sin_pinzas.png")
 transparente = arcade.load_texture(os.path.join(CURRENT_PATH, "..", "transparente.png"))
 
-class MaquinariaInterfaz(arcade.View):
+class MaquinariaInterfaz(InteraccionBase):
     def __init__(self, partida):
         super().__init__()
         self.partida = partida
         self.estado = "pinzas"
         self.sala = self.partida.sala
-        self.centro_x = const.ancho_ventana / 2
-        self.centro_y = const.alto_ventana / 2
-        self.fondo = None
-    
-    def cambiar_fondo(self, fondo):
-        self.fondo = fondo
-        fondo = arcade.Sprite(fondo)
-        factor_y = const.alto_interfaces / fondo.height 
-        factor_x = const.ancho_interfaces/ fondo.width
-        factor = min(factor_x, factor_y)
-        fondo.height = fondo.height * factor
-        fondo.width = fondo.width * factor
-        fondo.center_x = self.centro_x
-        fondo.center_y = self.centro_y
-        if self.lista_fondo:
-            self.lista_fondo.pop()
-        self.lista_fondo.append(fondo)
 
     def _sacar_pinzas(self):
         pinzas = arcade.Sprite(transparente, center_x=self.centro_x - 40, center_y= self.centro_y - 170)
@@ -37,10 +20,12 @@ class MaquinariaInterfaz(arcade.View):
         pinzas.height = 130
         self.lista_interaccion.append(pinzas)
 
-    def on_show_view(self):
+    def on_update(self, delta: float):
+        super().on_update(delta)
 
-        self.lista_fondo = arcade.SpriteList()
-        self.lista_interaccion = arcade.SpriteList()
+    def on_show_view(self):
+        super().on_show_view()
+
         if not self.fondo:
             self.cambiar_fondo(fondo_con_pinzas)
         else:
@@ -60,7 +45,7 @@ class MaquinariaInterfaz(arcade.View):
                         self.cambiar_fondo(fondo_sin_pinzas)
                         self.sala.inventario.agregar_objeto("pinzas")
                         mensaje = '"has obtenido pinzas"'
-                        self.partida.mostrar_texto(mensaje)
+                        self.ejecutar_dialogo(mensaje, voz="Guia")
                         self.lista_interaccion.clear()
                         self.estado = "sin_pinzas"
             else:

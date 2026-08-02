@@ -1,6 +1,6 @@
 import arcade, os, math
 from configuraciones import Constantes as const
-
+from clases.salas.interaccion_base import InteraccionBase
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 # Carga de recursos estables
@@ -11,15 +11,12 @@ transparente = arcade.load_texture(os.path.join(CURRENT_PATH, "..", "transparent
 # El objetivo en grados para ganar (Casi una vuelta completa: 340°)
 SOLUCION = 340
 
-class ValvulasInterfaz(arcade.View):
-
+class ValvulasInterfaz(InteraccionBase):
     def __init__(self, partida):
         super().__init__()
         self.partida = partida
         self.estado = "incompleto"
         self.sala = self.partida.sala
-        self.centro_x = const.ancho_ventana / 2
-        self.centro_y = const.alto_ventana / 2
         
         # Guardará el sprite de la válvula que el jugador está cliqueando/manteniendo activamente
         self.valvula_girando = None
@@ -40,21 +37,6 @@ class ValvulasInterfaz(arcade.View):
             {"name": "Válvula 2", "x": self.centro_x - 77,  "y": self.centro_y - 69, "vel_bajada": self.VEL_MEDIUM},
             {"name": "Válvula 3", "x": self.centro_x + 75, "y": self.centro_y + 27, "vel_bajada": self.VEL_HIGH}
         ]
-
-    def cambiar_fondo(self, fondo):
-        self.fondo = fondo
-        fondo = arcade.Sprite(fondo)
-        factor_y = const.alto_interfaces / fondo.height 
-        factor_x = const.ancho_interfaces/ fondo.width
-        factor = min(factor_x, factor_y)
-        fondo.height = fondo.height * factor
-        fondo.width = fondo.width * factor
-        fondo.center_x = self.centro_x
-        fondo.center_y = self.centro_y
-        if self.lista_fondo:
-            self.lista_fondo.clear()
-        self.lista_fondo.append(fondo)
-        print("se cambio el fondo", self.fondo)
 
     def _inicializar_sprites_fijos(self):
         """ Crea los sprites de fondo y válvulas de forma persistente en memoria """
@@ -127,7 +109,8 @@ class ValvulasInterfaz(arcade.View):
         
         # Ejecutamos la resolución en la sala base y notificamos al jugador
         self.sala.ValvulasResuelto()
-        self.partida.mostrar_texto("¡Excelente! Las válvulas han cortado el flujo de agua en la sala.")
+        self.partida.ejecutar_dialogo("¡Excelente! Las válvulas han cortado el flujo de agua en la sala.", 
+                                      voz="es-ES-AlvaroNeural", velocidad="+0%", tono="+0Hz")
         
         # Cerramos la interfaz regresando a la simulación limpia de la partida
         self.window.show_view(self.partida)

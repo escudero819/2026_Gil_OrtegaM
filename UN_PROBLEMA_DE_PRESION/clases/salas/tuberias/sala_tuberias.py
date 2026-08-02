@@ -136,7 +136,7 @@ interactuables = [
         "x": 570 * FACTOR_ESCALAR,
         "y": 470 * FACTOR_ESCALAR,
         "funcion": func_valvulas,
-        "ubicacion_jugador": (0, - textura_valvulas.height / 2 - 20),
+        "ubicacion_jugador": (0,- 20),
     },
     {
         "nombre": "panel",
@@ -144,7 +144,7 @@ interactuables = [
         "x": 60 * FACTOR_ESCALAR,
         "y": 145 * FACTOR_ESCALAR,
         "funcion": func_panel,
-        "ubicacion_jugador": (textura_panel.width/2 +10, 0),
+        "ubicacion_jugador": (10, 0),
     },
     {
         "nombre": "computadora_der",
@@ -152,7 +152,7 @@ interactuables = [
         "x": 165 * FACTOR_ESCALAR,
         "y": 70 * FACTOR_ESCALAR,
         "funcion": func_comp_der,
-        "ubicacion_jugador": (0, textura_computadora.height / 2 + 5),
+        "ubicacion_jugador": (0, 5),
     },
     {
         "nombre": "computadora_izq",
@@ -160,7 +160,7 @@ interactuables = [
         "x": 425 * FACTOR_ESCALAR,
         "y": 70 * FACTOR_ESCALAR,
         "funcion": func_comp_izq,
-        "ubicacion_jugador": (0, textura_computadora.height / 2 + 5),
+        "ubicacion_jugador": (0, 5),
     },
     {
         "nombre": "armario",
@@ -168,7 +168,7 @@ interactuables = [
         "x": 784.5 * FACTOR_ESCALAR,
         "y": 250 * FACTOR_ESCALAR,
         "funcion": func_armario,
-        "ubicacion_jugador": (-textura_armario.width / 2 - 10, 0),
+        "ubicacion_jugador": (-10, 0),
     },
     {
         "nombre": "maquinaria",
@@ -176,7 +176,7 @@ interactuables = [
         "x": 700 * FACTOR_ESCALAR,
         "y": 120 * FACTOR_ESCALAR,
         "funcion": func_maquinaria,
-        "ubicacion_jugador": (0, textura_maquinaria.height / 2 + 5),
+        "ubicacion_jugador": (0, 5),
     },
     {
         "nombre": "porton",
@@ -184,9 +184,8 @@ interactuables = [
         "x": 120 * FACTOR_ESCALAR,
         "y": 360 * FACTOR_ESCALAR,
         "funcion": func_porton,
-        "ubicacion_jugador": (textura_porton.width /4, -textura_porton.height / 2 - 5),
-    },
-    
+        "ubicacion_jugador": (0, 5),
+    }
 ]
 
 agua1 = escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas/agua1.png")) 

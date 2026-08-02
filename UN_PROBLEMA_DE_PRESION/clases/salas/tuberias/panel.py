@@ -1,6 +1,6 @@
 import arcade, os, time, math
 from configuraciones import Constantes as const
-
+from clases.salas.interaccion_base import InteraccionBase
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 #cargar imagenes
 
@@ -32,19 +32,17 @@ SOLUCION_CORRECTA = {
     "circulo":   "A",
     "rombo":     "C"
 }
-class PanelInterfaz(arcade.View):
+class PanelInterfaz(InteraccionBase):
 
     def __init__(self, partida):
         super().__init__()
         self.partida = partida
         self.estado = "sin_elem"
         self.sala = self.partida.sala
-        self.centro_x = const.ancho_ventana / 2
-        self.centro_y = const.alto_ventana / 2
-        self.fondo = None
         self.parpadeo = 1.5
         self.fondo_parpadeo = False
         self.timer = time.time()
+        self.interfaz_texto = None
 
         # para logica puzzle
         self.puzzle_activo = False  # Cambia a True cuando "cortas" los cables y pones los elementos
@@ -55,21 +53,6 @@ class PanelInterfaz(arcade.View):
         self.sprites_botones_der = {}
 
         self.botones_cargados = False
-    
-    def cambiar_fondo(self, fondo):
-        self.fondo = fondo
-        fondo = arcade.Sprite(fondo)
-        factor_y = const.alto_interfaces / fondo.height 
-        factor_x = const.ancho_interfaces/ fondo.width
-        factor = min(factor_x, factor_y)
-        fondo.height = fondo.height * factor
-        fondo.width = fondo.width * factor
-        fondo.center_x = self.centro_x
-        fondo.center_y = self.centro_y
-        if self.lista_fondo:
-            self.lista_fondo.clear()
-        self.lista_fondo.append(fondo)
-        print("se cambio el fondo", self.fondo)
 
     def verificar_puzzle(self):
         # Si todavía no conectó las 4 figuras, no puede haber ganado aún
@@ -86,7 +69,7 @@ class PanelInterfaz(arcade.View):
         # ¡SI PASÓ EL BUCLE, GANÓ!
         print("¡Puzzle Completado con Éxito! Presión regulada.")
         mensaje = '"vamos!!! eh logrado arreglar el panel!"'
-        self.partida.mostrar_texto(mensaje)
+        self.ejecutar_dialogo(mensaje)
         self.sala.PanelResuelto()
 
     def _colocar_elem(self):
@@ -147,8 +130,7 @@ class PanelInterfaz(arcade.View):
         return cable_sprite
 
     def on_show_view(self):
-        self.lista_fondo = arcade.SpriteList()
-        self.lista_interaccion = arcade.SpriteList()
+        super().on_show_view()
         if not self.fondo:
             self.cambiar_fondo(sin_elementos_1)
         else:
@@ -201,8 +183,9 @@ class PanelInterfaz(arcade.View):
                 if self.seleccion_izquierda:
                     lista_boton = self.sprites_botones_izq[self.seleccion_izquierda]
                     arcade.draw_circle_outline(lista_boton[0].center_x, lista_boton[0].center_y, 15, arcade.color.CYAN, border_width=2)
-    
+
     def on_update(self, delta: float):
+        super().on_update(delta)
         if self.estado == "sin_elem":
             if time.time() - self.timer >= self.parpadeo:
                 if self.fondo_parpadeo:
@@ -226,7 +209,7 @@ class PanelInterfaz(arcade.View):
                         print("con_elem")
                     else:
                         mensaje = '"no lo tengo"'
-                        self.partida.mostrar_texto(mensaje)
+                        self.ejecutar_dialogo(mensaje)
             elif self.estado == "con_elem":
                 self.cambiar_fondo(cortados)
                 self._botones()

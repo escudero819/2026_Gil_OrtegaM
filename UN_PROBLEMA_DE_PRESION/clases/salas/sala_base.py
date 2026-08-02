@@ -4,7 +4,7 @@ import time
 from configuraciones import Constantes as const
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))   
 
-Colisiones_Transparentes = True
+Colisiones_Transparentes = False
 
 class Objeto(arcade.Sprite):
 
@@ -20,8 +20,8 @@ class Interactuable(Objeto):
         self.funcion = funcion
         if ubicacion_jugador:
             self.ubicacion_jugador = {
-                "x": self.center_x + ubicacion_jugador[0],
-                "y": self.center_y + ubicacion_jugador[1] 
+                "x": self.center_x + ubicacion_jugador[0] + (lambda: 0 if ubicacion_jugador[0] == 0 else imagen_path.width / 2 if ubicacion_jugador[0] > 0 else -imagen_path.width / 2)(),
+                "y": self.center_y + ubicacion_jugador[1] + (lambda: 0 if ubicacion_jugador[1] == 0 else imagen_path.height / 2 if ubicacion_jugador[1] > 0 else -imagen_path.height / 2)()
             }
         else:
             self.ubicacion_jugador = {
@@ -124,6 +124,21 @@ class Sala():
         for interactuable in interactuables:
             # Creamos el objeto que interactua y genera pantallas emergentes
             objeto_interactuable = Interactuable(interactuable["nombre"], interactuable["textura"], interactuable["x"] + self.correccion_x, interactuable["y"], funcion=interactuable["funcion"], ubicacion_jugador=interactuable.get("ubicacion_jugador"))
+            ancho_obj = objeto_interactuable.width
+            alto_obj = objeto_interactuable.height
+
+            #POXIMAMENTE
+            """
+            puntos_colision = [
+                (-ancho_obj/2, -alto_obj/2),  # Esquina inferior izquierda
+                (ancho_obj/2, -alto_obj/2),   # Esquina inferior derecha
+                (ancho_obj/2, -alto_obj/4),    # Esquina superior derecha (a la altura de la cintura)
+                (-ancho_obj/2, -alto_obj/4)    # Esquina superior izquierda
+            ]
+
+            objeto_interactuable.hit_box = arcade.hitbox.HitBox(puntos_colision)
+            """
+
             self.lista_bloqueos.append(objeto_interactuable)
 
 
