@@ -45,9 +45,9 @@ class Estanteria1Interfaz(InteraccionBase):
             if caja.collides_with_point((x, y)):
                 print(f"Click en caja con ohms: {caja.ohms}")
                 # Aquí puedes agregar la lógica para manejar la interacción con la caja
-                if self.partida.sala.inventario.consultar(f"resistencia de {caja.ohms}"):
+                if self.partida.sala.inventario.consultar(f"resistencia_{caja.ohms}"):
                     self.ejecutar_dialogo(f'"Ya tengo de {caja.ohms} ohms."')
-                self.partida.sala.inventario.agregar_objeto(f"resistencia de {caja.ohms}")
+                self.partida.sala.inventario.agregar_objeto(f"resistencia_{caja.ohms}")
                 self.ejecutar_dialogo(f"agarraste una resistencia de {caja.ohms} ohms.", voz="Guia")
 
     

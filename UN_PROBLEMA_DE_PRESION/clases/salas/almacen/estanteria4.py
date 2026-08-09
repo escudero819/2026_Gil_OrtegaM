@@ -16,8 +16,9 @@ class Estanteria4Interfaz(InteraccionBase):
     def _inicializar_sprites_fijos(self):
         """ Crea los sprites de fondo y estanterías de forma persistente en memoria """
         # Sprite del fondo metálico de la interfaz
-        caja = arcade.Sprite(transparente, center_x=self.centro_x - 180, center_y=self.centro_y - 140, 
-                             width=130, height=120)
+        caja = arcade.Sprite(transparente, center_x=self.centro_x - 80, center_y=self.centro_y)
+        caja.width = 120
+        caja.height = 120
         self.lista_interaccion.append(caja)
 
     def on_show_view(self):
@@ -35,7 +36,12 @@ class Estanteria4Interfaz(InteraccionBase):
             if caja.collides_with_point((x, y)):
                 print(f"Click en caja con transistores")
                 # Aquí puedes agregar la lógica para manejar la interacción con la caja
-                if self.partida.sala.inventario.consultar(f"transistor"):
-                    self.ejecutar_dialogo(f'"Ya tengo"')
-                self.partida.sala.inventario.agregar_objeto(f"transistor")
-                self.ejecutar_dialogo(f"agarraste un transistor.", voz="Guia")
+                if self.partida.sala.inventario.consultar(f"transistor1"):
+                    if self.partida.sala.inventario.consultar(f"transistor2"):
+                        self.ejecutar_dialogo(f'"Ya tengo suficientes transistores."')
+                    else:
+                        self.partida.sala.inventario.agregar_objeto(f"transistor2")
+                        self.ejecutar_dialogo(f"agarraste un segundo transistor.", voz="Guia")
+                else:
+                    self.partida.sala.inventario.agregar_objeto(f"transistor1")
+                    self.ejecutar_dialogo(f"agarraste un transistor.", voz="Guia")

@@ -36,6 +36,7 @@ class InteraccionBase(arcade.View):
         """
         self.mostrar_texto(texto)
 
+        """
         if voz == "Guia":
             voz = "es-CO-GonzaloNeural"  # Voz de guía en español colombiano
 
@@ -97,7 +98,7 @@ class InteraccionBase(arcade.View):
                 print(f"[Aviso Hilo Voice] Error secundario ignorado: {thread_err}")
 
         threading.Thread(target=_hilo_trabajador, daemon=True).start()
-
+        """
     
     def mostrar_texto(self, mensaje_nuevo):
         """ Configura y arranca la animación de letras desde cero """
@@ -107,6 +108,15 @@ class InteraccionBase(arcade.View):
         self.temporizador_letra = 0.0
         self.interfaz_texto.text = ""
         self.mostrar_cuadro_texto = True
+
+    def escalar_interactuable(self, sprite):
+        """ Ajusta el tamaño de un sprite para que encaje en la ventana según la escala de la interfaz """
+        factor_y = sprite.height / const.alto_interfaces 
+        factor_x = sprite.width / const.ancho_interfaces
+        factor = min(factor_x, factor_y)
+        sprite.height *= factor
+        sprite.width *= factor
+
 
     def cambiar_fondo(self, fondo):
         self.fondo = fondo
@@ -169,6 +179,9 @@ class InteraccionBase(arcade.View):
                         color=arcade.color.WHITE,
                         border_width=3
                     )
+
+                    if self.interfaz_texto:
+                        self.interfaz_texto.draw()
 
     def on_update(self, delta_time: float):
              # ANIMACIÓN DE TEXTO GRADUAL (MÁQUINA DE ESCRIBIR)

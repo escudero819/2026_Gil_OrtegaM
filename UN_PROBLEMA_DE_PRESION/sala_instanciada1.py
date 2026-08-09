@@ -54,7 +54,7 @@ class SalaActualView(arcade.View):
         - velocidad: p. ej. '+25%' para desesperación/alarma, '-10%' para lentitud.
         - tono: p. ej. '+15Hz' para tono agudo/tembloroso, '-10Hz' para voz grave.
         """
-
+        """
         # Detenemos cualquier audio anterior
         if self.reproductor_audio:
             arcade.stop_sound(self.reproductor_audio)
@@ -106,7 +106,6 @@ class SalaActualView(arcade.View):
                             try:
                                 audio = arcade.load_sound(archivo_audio)
                                 self.reproductor_audio = arcade.play_sound(audio)
-                                self.mostrar_texto(texto)
 
                             except Exception as audio_err:
                                 print(f"[Aviso Audio] Falló la carga del MP3: {audio_err}")
@@ -116,6 +115,8 @@ class SalaActualView(arcade.View):
                 print(f"[Aviso Hilo Voice] Error secundario ignorado: {thread_err}")
 
         threading.Thread(target=_hilo_trabajador, daemon=True).start()
+        """
+        self.mostrar_texto(texto)
 
     def on_show_view(self):
         """ 

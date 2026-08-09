@@ -10,6 +10,9 @@ from clases.salas.almacen.estanteria2 import Estanteria2Interfaz
 from clases.salas.almacen.estanteria3 import Estanteria3Interfaz
 from clases.salas.almacen.estanteria4 import Estanteria4Interfaz
 from clases.salas.almacen.estanteria5 import Estanteria5Interfaz
+from clases.salas.almacen.montacargas import CircuitoMontacargasInterfaz
+from clases.salas.almacen.puerta_candado import CandadoInterfaz
+
 # from clases.salas.almacen.montacargas import Montacargas
 # from clases.salas.almacen.puerta_almacen import PuertaAlmacen
 
@@ -19,7 +22,7 @@ CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
 # FONDO DE PRUEBAS Y AJUSTE DE PAREDES Y ESCALADO DE TEXTURAS
-fondo = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/fondo2.png") 
+fondo = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/fondo3.png") 
 
 # FACTORES ESCALARES
 FACTOR_X = const.ancho_ventana / fondo.width
@@ -89,6 +92,8 @@ textura_estanteria_num4 = arcade.load_texture(CURRENT_PATH + "/texturas/interact
 textura_estanteria_num5 = arcade.load_texture(CURRENT_PATH + "/texturas/interactuables/estanteria5.1.png")
 textura_estanteria_num6 = arcade.load_texture(CURRENT_PATH + "/texturas/interactuables/estanteria6.1.png")
 textura_montacargas = arcade.load_texture(CURRENT_PATH + "/texturas/interactuables/montacargas.png")
+textura_caja = arcade.load_texture(CURRENT_PATH + "/texturas/interactuables/caja.png")
+textura_reja = arcade.load_texture(CURRENT_PATH + "/texturas/interactuables/reja_prueba.png")
 
 # funciones de los interactuables (se ejecutan cuando llega a la ubicacion definida en el interactuable)
 def func_estanteria_num1(partida):
@@ -126,6 +131,18 @@ def func_montacargas(partida):
     # proximamente: abrir pantalla emergente con informacion del montacargas
     sala = partida.sala
     partida.window.show_view(sala.montacargas_interfaz)
+    
+def func_caja(partida):
+    print("interactuando con caja")
+    # proximamente: abrir pantalla emergente con informacion de la caja
+    partida.ejecutar_dialogo("necesito mover esta caja, el montacargas podria.")
+
+def func_candado(partida):
+    print("interactuando con candado")
+    # proximamente: abrir pantalla emergente con informacion del candado
+    sala = partida.sala
+    partida.window.show_view(sala.candado_interfaz)
+
 
 # lista de interactuables de la sala de almacen, ubicacion, ubicacion del jugador y funcion a ejecutar
 
@@ -182,10 +199,26 @@ interactuables = [
         "y": escalar(350),
         "funcion": func_montacargas,
         "ubicacion_jugador": (escalar(-50), 0)
+    },
+    {
+        "nombre": "caja",
+        "textura": textura_caja,
+        "x": ubi_x_2,
+        "y": (ubi_y_1 + ubi_y_3) / 2,
+        "funcion": func_caja,
+        "ubicacion_jugador": (escalar(-50), 0)
+    },
+    {
+        "nombre": "candado",
+        "textura": textura_reja,
+        "x": escalar(ancho/2 - 870),
+        "y": escalar(530),
+        "funcion": func_candado,
+        "ubicacion_jugador": (0, escalar(-50))
     }
 ]
-
 class Sala_Almacen(Sala):
+
     def __init__(self):
         super().__init__()
         super().Fondo(texturas_fondo)
@@ -194,7 +227,8 @@ class Sala_Almacen(Sala):
         #super().Salida(salida["x"], salida["y"], salida["ancho"], salida["alto"], salida["funcion"])
         #super().Eliminadores(eliminadores)
         self.texto_inicial = '"entre al almacen"'
-        self.posicion_inicial = (const.ancho_ventana / 2, const.alto_ventana / 2)
+        self.posicion_inicial = (const.ancho_ventana / 2, const.alto_ventana / 3)
+        self.inventario.agregar_objeto("cod_candado")
 
     def InstanciarInterfaces(self, partida):
         #instanciar los objetos de las interfaces
@@ -203,6 +237,8 @@ class Sala_Almacen(Sala):
         self.estanteria3_interfaz = Estanteria3Interfaz(partida)
         self.estanteria4_interfaz = Estanteria4Interfaz(partida)
         self.estanteria5_interfaz = Estanteria5Interfaz(partida)
+        self.montacargas_interfaz = CircuitoMontacargasInterfaz(partida)
+        self.candado_interfaz = CandadoInterfaz(partida)
 
     def InstanciarEscaleras(self, partida):
         #instanciar los sprites de las escaleras 

@@ -101,6 +101,7 @@ def func_valvulas(partida):
     print("Has interactuado con las válvulas.")
     sala = partida.sala
     partida.window.show_view(sala.valvulas)
+
 def func_panel(partida):
     print("Has interactuado con el panel.")
     sala = partida.sala
@@ -184,7 +185,7 @@ interactuables = [
         "x": 120 * FACTOR_ESCALAR,
         "y": 360 * FACTOR_ESCALAR,
         "funcion": func_porton,
-        "ubicacion_jugador": (0, 5),
+        "ubicacion_jugador": (0, -5),
     }
 ]
 
