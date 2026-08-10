@@ -4,7 +4,7 @@ import os, arcade
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 fondo = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/transistores.png")
-transparente = arcade.load_texture(os.path.join(CURRENT_PATH, "..", "semitransparente_rojo.png"))
+transparente = arcade.load_texture(os.path.join(CURRENT_PATH, "..", "transparente.png"))
 
 
 class Estanteria4Interfaz(InteraccionBase):

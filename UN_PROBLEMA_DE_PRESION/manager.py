@@ -53,6 +53,12 @@ class Manager(arcade.View):
         
         self.video_cargado = True
 
+
+    def _pantalla_victoria(self):
+        from victoria import VictoriaView
+        victoria_view = VictoriaView()
+        self.window.show_view(victoria_view)
+
     def on_show_view(self):
         arcade.set_background_color(arcade.color.BLACK)
         self.temporizador_inicio = time.time()
@@ -61,7 +67,7 @@ class Manager(arcade.View):
         if self.sala_actual == "ninguna":
             if time.time() - self.temporizador_inicio > 1.0:  
                 self.sala_actual = "tuberias"
-                self.sala = SalaActualView(Sala_Almacen(), self) # cambiar a Sala_Tuberias() si quieres iniciar con la sala de tuberías
+                self.sala = SalaActualView(Sala_Tuberias(), self) # cambiar a Sala_Tuberias() si quieres iniciar con la sala de tuberías
                 self.window.show_view(self.sala)
         
         elif self.sala_actual == "tuberias" and not self.video_finished:
@@ -77,6 +83,9 @@ class Manager(arcade.View):
                         self.sala_actual = "almacen" # Reiniciamos para que no intente reproducir de nuevo
                         self.sala = SalaActualView(Sala_Almacen(), self)
                         self.window.show_view(self.sala)
+
+        elif self.sala_actual == "almacen":
+            self._pantalla_victoria()
 
     def on_draw(self):
         self.clear()

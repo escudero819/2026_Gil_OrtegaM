@@ -210,7 +210,7 @@ salida = {
     "y": 475 * FACTOR_ESCALAR,
     "ancho": 100 * FACTOR_ESCALAR,
     "alto": 100 * FACTOR_ESCALAR,
-    "funcion": lambda: print("saliendo")
+    "funcion": lambda: print("saliendo de la sala de tuberías")
 }
 
 
@@ -247,13 +247,12 @@ class Sala_Tuberias(Sala):
         for objeto in self.lista_bloqueos:
             if isinstance(objeto, Interactuable) and objeto.nombre == "porton":
                 self.lista_bloqueos.remove(objeto)
-        
         super().Fondo(texturas_post_porton)
-    
+
     def VerificarDerrota(self, jugador):
         if arcade.check_for_collision_with_list(jugador, self.lista_eliminadores):
             return (True, "El agua te alcanzó y te electrocutaste. ¡Has perdido!")
-        
+
         tiempo_resultado = super().VerificarDerrota(jugador)
         if tiempo_resultado:
             return tiempo_resultado

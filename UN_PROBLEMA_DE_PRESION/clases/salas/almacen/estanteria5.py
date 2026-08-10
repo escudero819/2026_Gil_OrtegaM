@@ -3,7 +3,7 @@ import os, arcade
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
-fondo = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/colores.png")
+fondo = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/coloresx.png")
 
 class Estanteria5Interfaz(InteraccionBase):
     def __init__(self, partida):

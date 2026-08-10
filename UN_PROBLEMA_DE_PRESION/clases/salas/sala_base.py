@@ -141,7 +141,6 @@ class Sala():
 
             self.lista_bloqueos.append(objeto_interactuable)
 
-
     def Salida(self, x, y, ancho, alto, funcion):
         self.salida = Salida(x + self.correccion_x, y, ancho, alto, funcion)
         self.lista_salida.append(self.salida)

@@ -211,6 +211,7 @@ class CircuitoMontacargasInterfaz(InteraccionBase):
         resistencias_puestas_count = sum(1 for val in self.valores_resistencias_puestas if val is not None)
         if resistencias_puestas_count == 4 and self.voltaje_actual == 24:
             print("puzzle completado")
+            self.partida.sala._Montacargas_Arreglado()
 
     # ----------------------------------------------------------------------
     # LÓGICA PRIVADA DE SELECCIÓN DE COMPONENTES BASE Y COLOCACIÓN EN EL PCB

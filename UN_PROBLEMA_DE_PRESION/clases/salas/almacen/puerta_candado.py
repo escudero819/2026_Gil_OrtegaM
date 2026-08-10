@@ -17,7 +17,7 @@ TEXTURAS_NUMEROS = [
     for i in range(10)
 ]
 
-codigo_correcto = [3, 7, 1]  # Código de 3 dígitos requerido para desbloquear la reja
+codigo_correcto = [4, 7, 9]  # Código de 3 dígitos requerido para desbloquear la reja
 
 class CandadoInterfaz(InteraccionBase):
     def __init__(self, partida):
@@ -85,18 +85,8 @@ class CandadoInterfaz(InteraccionBase):
         if self.valores_actuales == self.codigo_correcto:
             self.resuelto = True
             print("[Candado] ¡Combinación correcta!")
-            self.ejecutar_dialogo('"¡Click! Escuché el mecanismo destrabarse. La reja está abierta."')
-
-            # =========================================================================
-            # 📌 INSERTA AQUÍ EL CAMBIO DE ESTADO DE LA SALA / PASO DE NIVEL
-            # =========================================================================
-            # Ejemplos de integración según la lógica de tu juego:
-            # self.sala.puerta_candado_abierta = True
-            # self.sala.resolver_candado()
-            # self.sala.cambiar_estado("reja_desbloqueada")
-            # =========================================================================
-            from victoria import VictoriaView
-            self.partida.window.show_view(VictoriaView(self.partida))
+            self.sala._Reja_Abierta()  # Llama al método de la sala para desbloquear la reja
+            
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button != arcade.MOUSE_BUTTON_LEFT:

@@ -16,10 +16,8 @@ from clases.salas.almacen.puerta_candado import CandadoInterfaz
 # from clases.salas.almacen.montacargas import Montacargas
 # from clases.salas.almacen.puerta_almacen import PuertaAlmacen
 
-
 # Ruta de la carpeta actual
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
-
 
 # FONDO DE PRUEBAS Y AJUSTE DE PAREDES Y ESCALADO DE TEXTURAS
 fondo = arcade.load_texture(CURRENT_PATH + "/texturas/fondos/fondo3.png") 
@@ -35,6 +33,7 @@ def escalar_textura(textura):
     textura.width = textura.width * FACTOR_ESCALAR
     textura.height = textura.height * FACTOR_ESCALAR
     return textura
+
 def escalar(valor):
     return valor * FACTOR_ESCALAR
 
@@ -112,6 +111,7 @@ def func_estanteria_num3(partida):
     print("interactuando con estanteria 3")
     # proximamente: abrir pantalla emergente con informacion de la estanteria 3
     sala = partida.sala
+    partida.sala.inventario.agregar_objeto("cod_candado")
     partida.window.show_view(sala.estanteria3_interfaz)
 
 def func_estanteria_num4(partida):
@@ -217,6 +217,16 @@ interactuables = [
         "ubicacion_jugador": (0, escalar(-50))
     }
 ]
+
+
+salida = {
+    "x": escalar(ancho/2 - 870),
+    "y": escalar(alto - 200),
+    "ancho": escalar(200),
+    "alto": escalar(200),
+    "funcion": lambda: print("saliendo del almacen")
+}
+
 class Sala_Almacen(Sala):
 
     def __init__(self):
@@ -224,11 +234,9 @@ class Sala_Almacen(Sala):
         super().Fondo(texturas_fondo)
         super().Colisiones(paredes)
         super().Interactuables(interactuables)
-        #super().Salida(salida["x"], salida["y"], salida["ancho"], salida["alto"], salida["funcion"])
-        #super().Eliminadores(eliminadores)
+        super().Salida(salida["x"], salida["y"], salida["ancho"], salida["alto"], salida["funcion"])
         self.texto_inicial = '"entre al almacen"'
         self.posicion_inicial = (const.ancho_ventana / 2, const.alto_ventana / 3)
-        self.inventario.agregar_objeto("cod_candado")
 
     def InstanciarInterfaces(self, partida):
         #instanciar los objetos de las interfaces
@@ -239,9 +247,30 @@ class Sala_Almacen(Sala):
         self.estanteria5_interfaz = Estanteria5Interfaz(partida)
         self.montacargas_interfaz = CircuitoMontacargasInterfaz(partida)
         self.candado_interfaz = CandadoInterfaz(partida)
-
-    def InstanciarEscaleras(self, partida):
-        #instanciar los sprites de las escaleras 
-        pass
+        self.inventario.agregar_objeto("cod_candado")  # Agregamos el código del candado al inventario al iniciar la sala
 
     # PROXIMAMENTE: hacer las funciones que hagan los cambios de estado de la sala, como abrir puertas, activar maquinaria, etc.
+    def _Montacargas_Arreglado(self):
+        for objeto in self.lista_bloqueos:
+
+            if isinstance(objeto, Interactuable) and objeto.nombre == "montacargas":
+                montacargas = objeto
+                print("Montacargas movido.")
+            
+            if isinstance(objeto, Interactuable) and objeto.nombre == "caja":
+                caja = objeto
+                print("Caja movida.")
+        self.lista_bloqueos.remove(caja)
+        self.lista_bloqueos.remove(montacargas)
+        montacargas_nuevo = arcade.Sprite(escalar_textura(arcade.load_texture(CURRENT_PATH + "/texturas/interactuables/montacargas_caja.png")),
+                                           center_x= escalar(ancho/2) + escalar(-425) + self.correccion_x, center_y=escalar(1400))
+        self.lista_bloqueos.append(montacargas_nuevo)
+        self.partida.ejecutar_dialogo('"he logrado mover la caja y despejar el camino."')
+
+    def _Reja_Abierta(self):
+        for objeto in self.lista_bloqueos:
+            if isinstance(objeto, Interactuable) and objeto.nombre == "candado":
+                candado = objeto
+                print("Candado abierto.")
+        self.lista_bloqueos.remove(candado)
+        self.partida.ejecutar_dialogo('"Vamos! Eh desbloqueado el candado."')
