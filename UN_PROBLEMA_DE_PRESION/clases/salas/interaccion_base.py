@@ -117,7 +117,6 @@ class InteraccionBase(arcade.View):
         sprite.height *= factor
         sprite.width *= factor
 
-
     def cambiar_fondo(self, fondo):
         self.fondo = fondo
         fondo = arcade.Sprite(fondo)
@@ -125,26 +124,35 @@ class InteraccionBase(arcade.View):
         factor_x = const.ancho_interfaces/ fondo.width
         factor = min(factor_x, factor_y)
         fondo.height = fondo.height * factor
+        self.alto = fondo.height
         fondo.width = fondo.width * factor
+        self.ancho = fondo.width
         fondo.center_x = self.centro_x
         fondo.center_y = self.centro_y
         if self.lista_fondo:
             self.lista_fondo.clear()
         self.lista_fondo.append(fondo)
+        self.correccion_x = (const.ancho_ventana - fondo.width) / 2
+        self.correccion_y = (const.alto_ventana - fondo.height) / 2
+
         print("se cambio el fondo", self.fondo)
 
+        self.interfaz_texto.x = self.correccion_x + 50
+        self.interfaz_texto.y = self.correccion_y + 100
+        self.interfaz_texto.width = self.ancho
+    
     def on_show_view(self):
         # Inicializamos el objeto de texto en la parte inferior de la ventana
         self.interfaz_texto = arcade.Text(
             text="",
-            x=80,                          # Margen izquierdo para que no toque el borde de la pantalla
-            y=110,                         # Altura interna de la caja de texto
+            x=0,                          # Margen izquierdo para que no toque el borde de la pantalla
+            y=0,                         # Altura interna de la caja de texto
             color=arcade.color.WHITE,
             font_size=20,
             font_name="Courier New",             
             bold=True,
             multiline=True,
-            width=self.window.width - 160        # Se adapta al ancho de tu pantalla automáticamente
+            width=10 #valor previsorio antes de reemplazarlo con el self.ancho
         )
         self.lista_fondo = arcade.SpriteList()
         self.lista_interaccion = arcade.SpriteList()
@@ -153,12 +161,12 @@ class InteraccionBase(arcade.View):
         self.lista_fondo.draw()
         self.lista_interaccion.draw()
         if self.mostrar_cuadro_texto:
-                    ancho_pantalla = self.window.width
+                    ancho_interfaz = self.ancho
                     
                     # Configuramos las coordenadas de la caja usando la esquina inferior izquierda como base
-                    margen_izquierdo = 40
-                    borde_inferior = 25
-                    ancho_caja = ancho_pantalla - 80
+                    margen_izquierdo = self.correccion_x + 40
+                    borde_inferior = self.correccion_y + 20
+                    ancho_caja = ancho_interfaz - 80
                     alto_caja = 110
         
                     # 1. Fondo de la caja (Left, Bottom, Width, Height)

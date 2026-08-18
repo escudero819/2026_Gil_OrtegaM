@@ -13,9 +13,6 @@ from clases.salas.almacen.estanteria5 import Estanteria5Interfaz
 from clases.salas.almacen.montacargas import CircuitoMontacargasInterfaz
 from clases.salas.almacen.puerta_candado import CandadoInterfaz
 
-# from clases.salas.almacen.montacargas import Montacargas
-# from clases.salas.almacen.puerta_almacen import PuertaAlmacen
-
 # Ruta de la carpeta actual
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 

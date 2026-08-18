@@ -5,6 +5,7 @@ import threading
 from PIL import Image
 from clases.salas.almacen.sala_almacen import Sala_Almacen
 from clases.salas.tuberias.sala_tuberias import Sala_Tuberias
+from clases.salas.hidroponia.sala_hidroponia import Sala_Hidroponia
 from sala_instanciada1 import SalaActualView
 from configuraciones import Constantes as const
 
@@ -26,10 +27,10 @@ class Manager(arcade.View):
         self.timer = 0.0
 
         # Lanzamos la carga de frames en un hilo separado para evitar bloqueos
-        threading.Thread(target=self._cargar_video_hilo, daemon=True).start()
+        threading.Thread(target=self._cargar_video_hilo(ruta_transicion_sala2), daemon=True).start()
 
-    def _cargar_video_hilo(self):
-        cap = cv2.VideoCapture(ruta_transicion_sala2)
+    def _cargar_video_hilo(self, ruta):
+        cap = cv2.VideoCapture(ruta)
         fps_video = cap.get(cv2.CAP_PROP_FPS)
         if fps_video > 0:
             self.fps = fps_video
@@ -52,7 +53,6 @@ class Manager(arcade.View):
             self.frames_texturas.append(arcade.Texture(image=pil_img))
         
         self.video_cargado = True
-
 
     def _pantalla_victoria(self):
         from victoria import VictoriaView
@@ -80,12 +80,29 @@ class Manager(arcade.View):
                     
                     if self.current_frame_index >= len(self.frames_texturas):
                         self.video_finished = True
+                        self.video_cargado = False
                         self.sala_actual = "almacen" # Reiniciamos para que no intente reproducir de nuevo
                         self.sala = SalaActualView(Sala_Almacen(), self)
                         self.window.show_view(self.sala)
 
-        elif self.sala_actual == "almacen":
-            self._pantalla_victoria()
+        elif self.sala_actual == "almacen" and not self.video_finished:
+            """
+            if not self.video_cargado:
+                threading.Thread(target=self._cargar_video_hilo(ruta_transicion_sala4), daemon=True).start()
+            # Solo avanzamos el video si ya terminó de cargarse en segundo plano
+            """
+            if self.video_cargado and self.frames_texturas:
+                self.timer += delta_time
+                if self.timer >= self.frame_time:
+                    self.timer = 0.0
+                    self.current_frame_index += 1
+                    
+                    if self.current_frame_index >= len(self.frames_texturas):
+                        self.video_finished = True
+                        self.video_cargado = False
+                        self.sala_actual = "hidroponia" # Reiniciamos para que no intente reproducir de nuevo
+                        self.sala = SalaActualView(Sala_Hidroponia(), self)
+                        self.window.show_view(self.sala)
 
     def on_draw(self):
         self.clear()

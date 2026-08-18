@@ -63,12 +63,13 @@ class Inventario():
         for objeto in self.lista_objetos:
             if objeto == nombre_objeto:
                 return True
+        return False
     
     def eliminar_objeto(self, nombre_objeto):
         for i in range(len(self.lista_objetos)):
-            if self.lista_objetos == nombre_objeto:
+            if self.lista_objetos[i] == nombre_objeto:
                 self.lista_objetos.pop(i)
-                
+                return
 
 class Sala():
 
@@ -158,3 +159,6 @@ class Sala():
     def VerificarDerrota(self):
         if time.time() - self.contador > self.tiempo_maximo:
             return (True, "tiempo")
+
+    def InstanciarInterfaces(self, partida):
+        pass
