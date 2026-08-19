@@ -10,7 +10,7 @@ import arcade
 from configuraciones import Constantes as const
 
 # clase padre y clase interactuable
-from ..sala_base import Sala, Interactuable
+from ..sala_base import Sala
 # clases de interactuables
 from clases.salas.hidroponia.lavanda import LavandaView
 from clases.salas.hidroponia.lechuga import LechugaView
@@ -19,7 +19,6 @@ from clases.salas.hidroponia.bolsas import BolsasView
 from clases.salas.hidroponia.mesa import MesaView
 from clases.salas.hidroponia.puerta_salida import PuertaView
 
-#from clases.salas.hidroponia.puerta_salida import PuertaView
 # path actual del archivo
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -181,13 +180,8 @@ class Sala_Hidroponia(Sala):
         super().Fondo(texturas_fondo)
         super().Colisiones(paredes)
         super().Interactuables(interactuables)
-        #super().Salida(salida["x"], salida["y"], salida["ancho"], salida["alto"], salida["funcion"])
         self.posicion_inicial = (const.ancho_ventana / 2, const.alto_ventana / 3)
         self.texto_inicial = "la ultima sala, solo tengo que abrir la puerta y estare a salvo."
-        for i in range(10):
-            self.inventario.agregar_objeto("nitrogeno")
-            self.inventario.agregar_objeto("fosforo")
-            self.inventario.agregar_objeto("potasio")
 
     def InstanciarInterfaces(self, partida):
         self.lavanda_interfaz = LavandaView(partida)

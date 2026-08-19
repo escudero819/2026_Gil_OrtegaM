@@ -52,6 +52,7 @@ class ValvulasInterfaz(InteraccionBase):
             self.lista_valvulas.append(spr)
 
     def on_show_view(self):
+        super().on_show_view()
         """ Se ejecuta al abrir la interfaz de las válvulas """
         self.valvula_girando = None
         # Contenedores gráficos de Arcade
@@ -60,6 +61,7 @@ class ValvulasInterfaz(InteraccionBase):
         self._inicializar_sprites_fijos()
 
     def on_draw(self):
+        super().on_draw()
         self.lista_fondo.draw()
         self.lista_valvulas.draw()
 
@@ -75,6 +77,7 @@ class ValvulasInterfaz(InteraccionBase):
             )
 
     def on_update(self, delta_time: float):
+        super().on_update(delta_time)
         if self.estado != "incompleto":
             return
 
@@ -116,13 +119,7 @@ class ValvulasInterfaz(InteraccionBase):
         self.window.show_view(self.partida)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if button != arcade.MOUSE_BUTTON_LEFT:
-            return
-
-        # Si el clic se hace fuera del recuadro del panel de fondo, cerramos la ventana emergente
-        if not arcade.get_sprites_at_point((x, y), self.lista_fondo):
-            self.window.show_view(self.partida)
-            return
+        super().on_mouse_press(x, y, button, modifiers)
 
         # Detectar cuál de las 3 válvulas fue presionada por el cursor
         valvulas_tocadas = arcade.get_sprites_at_point((x, y), self.lista_valvulas)

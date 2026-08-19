@@ -213,7 +213,6 @@ salida = {
     "funcion": lambda: print("saliendo de la sala de tuberías")
 }
 
-
 class Sala_Tuberias(Sala):
     
     def __init__(self):

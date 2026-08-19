@@ -4,8 +4,7 @@ Lógica del Menú Principal - Un Problema de Presión
 import os
 import arcade
 # Importamos la vista del juego y la sala correspondientes
-from manager import Manager
-from clases.salas.tuberias.sala_tuberias import Sala_Tuberias
+from manager2 import Manager
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__)) 
 

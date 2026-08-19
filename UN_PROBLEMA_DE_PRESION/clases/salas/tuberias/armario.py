@@ -59,48 +59,10 @@ class ArmarioInterfaz(InteraccionBase):
         elif self.estado == "abierto":
             self._abierto()
 
-    def on_draw(self):
-        self.lista_fondo.draw()
-        self.lista_interaccion.draw()
-
-        if self.mostrar_cuadro_texto:
-            ancho_pantalla = self.window.width
-            
-            # Configuramos las coordenadas de la caja usando la esquina inferior izquierda como base
-            margen_izquierdo = 40
-            borde_inferior = 25
-            ancho_caja = ancho_pantalla - 80
-            alto_caja = 110
-
-            # 1. Fondo de la caja (Left, Bottom, Width, Height)
-            arcade.draw_lbwh_rectangle_filled(
-                left=margen_izquierdo,
-                bottom=borde_inferior,
-                width=ancho_caja,
-                height=alto_caja,
-                color=(15, 15, 15, 230)
-            )
-            
-            # 2. Borde de la caja
-            arcade.draw_lbwh_rectangle_outline(
-                left=margen_izquierdo,
-                bottom=borde_inferior,
-                width=ancho_caja,
-                height=alto_caja,
-                color=arcade.color.WHITE,
-                border_width=3
-            )
-            
-            # 3. Renderizar las letras que se están escribiendo
-            if self.interfaz_texto:
-                self.interfaz_texto.draw()
-
+    
     def on_mouse_press(self, x, y, button, modifiers):
-        if self.mostrar_cuadro_texto:
-                 # Si ya se terminó de escribir todo el texto
-                if self.indice_letra >= len(self.texto_completo):
-                    self.mostrar_cuadro_texto = False  # Oculta la caja y deja seguir jugando
-        
+        super().on_mouse_press(x, y, button, modifiers)
+
         if arcade.get_sprites_at_point((x,y), self.lista_fondo):
             if self.estado != "sin_objetos":
                 if arcade.get_sprites_at_point((x,y), self.lista_interaccion):

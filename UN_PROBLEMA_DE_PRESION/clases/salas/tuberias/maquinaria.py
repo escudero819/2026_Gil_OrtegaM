@@ -20,9 +20,6 @@ class MaquinariaInterfaz(InteraccionBase):
         pinzas.height = 130
         self.lista_interaccion.append(pinzas)
 
-    def on_update(self, delta: float):
-        super().on_update(delta)
-
     def on_show_view(self):
         super().on_show_view()
 
@@ -33,22 +30,17 @@ class MaquinariaInterfaz(InteraccionBase):
         if self.estado == "pinzas":
             self._sacar_pinzas()
     
-    def on_draw(self):
-        self.lista_fondo.draw()
-        self.lista_interaccion.draw()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if arcade.get_sprites_at_point((x,y), self.lista_fondo):
-            if self.estado != "sin_pinzas":
-                if arcade.get_sprites_at_point((x,y), self.lista_interaccion):
-                    if self.estado == "pinzas":
-                        self.cambiar_fondo(fondo_sin_pinzas)
-                        self.sala.inventario.agregar_objeto("pinzas")
-                        mensaje = '"has obtenido pinzas"'
-                        self.ejecutar_dialogo(mensaje, voz="Guia")
-                        self.lista_interaccion.clear()
-                        self.estado = "sin_pinzas"
-            else:
-                self.window.show_view(self.partida)
+        super().on_mouse_press(x, y, button, modifiers)
+        if self.estado != "sin_pinzas":
+            if arcade.get_sprites_at_point((x,y), self.lista_interaccion):
+                if self.estado == "pinzas":
+                    self.cambiar_fondo(fondo_sin_pinzas)
+                    self.sala.inventario.agregar_objeto("pinzas")
+                    mensaje = '"has obtenido pinzas"'
+                    self.ejecutar_dialogo(mensaje, voz="Guia")
+                    self.lista_interaccion.clear()
+                    self.estado = "sin_pinzas"
         else:
             self.window.show_view(self.partida)

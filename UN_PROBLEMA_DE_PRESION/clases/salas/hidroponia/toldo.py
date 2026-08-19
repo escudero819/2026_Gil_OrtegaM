@@ -30,8 +30,8 @@ class ToldoView(InteraccionBase):
         self.bolsa_seleccionada = None
         self.ingresar = None
 
-        self.COLOR_OSCURO = (100, 100, 100)      # RESISTENCIA DESSELECCIONADA / APAGADA
-        self.COLOR_SELECCIONADO = (255, 255, 255) # RESISTENCIA SELECCIONADA / BRILLANTE
+        self.COLOR_OSCURO = (100, 100, 100)     
+        self.COLOR_SELECCIONADO = (255, 255, 255) 
 
     def _volver(self):
         self.volver = arcade.Sprite(transparente, center_x= 40 + self.correccion_x, center_y= self.alto - 40 + self.correccion_y)

@@ -111,11 +111,12 @@ class InteraccionBase(arcade.View):
 
     def escalar_interactuable(self, sprite):
         """ Ajusta el tamaño de un sprite para que encaje en la ventana según la escala de la interfaz """
-        factor_y = sprite.height / const.alto_interfaces 
-        factor_x = sprite.width / const.ancho_interfaces
+        factor_y = self.alto / self.fondo.height 
+        factor_x = self.ancho / self.fondo.width
         factor = min(factor_x, factor_y)
         sprite.height *= factor
         sprite.width *= factor
+        return sprite
 
     def cambiar_fondo(self, fondo):
         self.fondo = fondo

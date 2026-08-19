@@ -6,10 +6,11 @@ from PIL import Image
 from clases.salas.almacen.sala_almacen import Sala_Almacen
 from clases.salas.tuberias.sala_tuberias import Sala_Tuberias
 from clases.salas.hidroponia.sala_hidroponia import Sala_Hidroponia
+from clases.salas.laboratorio.sala_laboratorio import Sala_Laboratorio
 from sala_instanciada1 import SalaActualView
 from configuraciones import Constantes as const
 
-ruta_transicion_sala2 = "transiciones/transicion_sala2.mp4"
+ruta_transicion_sala2 = "/transiciones/transicion_sala2.mp4"
 
 class Manager(arcade.View):
     def __init__(self):
@@ -67,7 +68,7 @@ class Manager(arcade.View):
         if self.sala_actual == "ninguna":
             if time.time() - self.temporizador_inicio > 1.0:  
                 self.sala_actual = "tuberias"
-                self.sala = SalaActualView(Sala_Tuberias(), self) # cambiar a Sala_Tuberias() si quieres iniciar con la sala de tuberías
+                self.sala = SalaActualView(Sala_Laboratorio(), self) # cambiar a Sala_Tuberias() si quieres iniciar con la sala de tuberías
                 self.window.show_view(self.sala)
         
         elif self.sala_actual == "tuberias" and not self.video_finished:

@@ -144,8 +144,7 @@ class PanelInterfaz(InteraccionBase):
             self.lista_cables = arcade.SpriteList()
 
     def on_draw(self):
-        self.lista_fondo.draw()
-        self.lista_interaccion.draw()
+        super().on_draw()
 
         if self.estado == "cortados":
             if self.botones_cargados:
@@ -199,60 +198,59 @@ class PanelInterfaz(InteraccionBase):
                 self.timer = time.time()
     
     def on_mouse_press(self, x, y, button, modifiers):
-        if arcade.get_sprites_at_point((x,y), self.lista_fondo):
-            if self.estado == "sin_elem":
-                if arcade.get_sprites_at_point((x,y), self.lista_interaccion):
-                    if self.sala.inventario.consultar("cables"):
-                        self.lista_interaccion.clear()
-                        self.cambiar_fondo(con_elementos)
-                        self.estado = "con_elem"
-                        print("con_elem")
-                    else:
-                        mensaje = '"no lo tengo"'
-                        self.ejecutar_dialogo(mensaje)
-            elif self.estado == "con_elem":
-                self.cambiar_fondo(cortados)
-                self._botones()
-                self.estado = "cortados"
-            else:
-                cable_clickeado = arcade.get_sprites_at_point((x,y), self.lista_cables)
-                if cable_clickeado:
-                    self.lista_cables.remove(cable_clickeado[0])
-                    return
-                # --- 1. VERIFICAR CLICKS EN LA IZQUIERDA (FIGURAS) ---
-                for figura, lista_boton in self.sprites_botones_izq.items():
-                    # Creamos una caja invisible de colisión de 60x60 píxeles alrededor del nodo
-                    if arcade.get_sprites_at_point((x, y), lista_boton):
-                        self.seleccion_izquierda = figura
-                        print(f"Seleccionaste: {figura}. Ahora elige una letra.")
-                        return # Cortamos para que no evalúe nada más en este frame
-
-                # --- 2. VERIFICAR CLICKS EN LA DERECHA (LETRAS) ---
-                if self.seleccion_izquierda is not None:
-                    for letra, lista_boton in self.sprites_botones_der.items():
-                        if arcade.get_sprites_at_point((x, y), lista_boton):
-                            # El jugador tocó una letra teniendo una figura ya seleccionada
-                            print(f"Conectando {self.seleccion_izquierda} con {letra}")
-
-                            # Obtenemos los dos extremos matemáticos
-                            lista_inicio = self.sprites_botones_izq[self.seleccion_izquierda]
-                            punto_inicio = (lista_inicio[0].center_x, lista_inicio[0].center_y)
-                            lista_fin = self.sprites_botones_der[letra]
-                            punto_fin = (lista_fin[0].center_x, lista_fin[0].center_y)
-                            
-                            # Generamos el sprite estirado dinámicamente
-                            nuevo_cable = self.crear_cable_estirado(punto_inicio[0], punto_inicio[1], punto_fin[0], punto_fin[1])
-                            
-                            # Lo añadimos a la lista de renderizado
-                            self.lista_cables.append(nuevo_cable)
-                            
-                            # También guardas el registro en tu diccionario interno para saber que esa figura ya se usó
-                            self.conexiones_hechas[self.seleccion_izquierda] = letra
-                            # Reseteamos la selección para la próxima conexión
-                            self.seleccion_izquierda = None
-                            
-                            # Verificar si completó el puzzle entero
-                            self.verificar_puzzle()
-                            return
+        super().on_mouse_press(x, y, button, modifiers)
+        
+        if self.estado == "sin_elem":
+            if arcade.get_sprites_at_point((x,y), self.lista_interaccion):
+                if self.sala.inventario.consultar("cables"):
+                    self.lista_interaccion.clear()
+                    self.cambiar_fondo(con_elementos)
+                    self.estado = "con_elem"
+                    print("con_elem")
+                else:
+                    mensaje = '"no lo tengo"'
+                    self.ejecutar_dialogo(mensaje)
+        elif self.estado == "con_elem":
+            self.cambiar_fondo(cortados)
+            self._botones()
+            self.estado = "cortados"
         else:
-            self.window.show_view(self.partida)
+            cable_clickeado = arcade.get_sprites_at_point((x,y), self.lista_cables)
+            if cable_clickeado:
+                self.lista_cables.remove(cable_clickeado[0])
+                return
+            # --- 1. VERIFICAR CLICKS EN LA IZQUIERDA (FIGURAS) ---
+            for figura, lista_boton in self.sprites_botones_izq.items():
+                # Creamos una caja invisible de colisión de 60x60 píxeles alrededor del nodo
+                if arcade.get_sprites_at_point((x, y), lista_boton):
+                    self.seleccion_izquierda = figura
+                    print(f"Seleccionaste: {figura}. Ahora elige una letra.")
+                    return # Cortamos para que no evalúe nada más en este frame
+
+            # --- 2. VERIFICAR CLICKS EN LA DERECHA (LETRAS) ---
+            if self.seleccion_izquierda is not None:
+                for letra, lista_boton in self.sprites_botones_der.items():
+                    if arcade.get_sprites_at_point((x, y), lista_boton):
+                        # El jugador tocó una letra teniendo una figura ya seleccionada
+                        print(f"Conectando {self.seleccion_izquierda} con {letra}")
+
+                        # Obtenemos los dos extremos matemáticos
+                        lista_inicio = self.sprites_botones_izq[self.seleccion_izquierda]
+                        punto_inicio = (lista_inicio[0].center_x, lista_inicio[0].center_y)
+                        lista_fin = self.sprites_botones_der[letra]
+                        punto_fin = (lista_fin[0].center_x, lista_fin[0].center_y)
+                        
+                        # Generamos el sprite estirado dinámicamente
+                        nuevo_cable = self.crear_cable_estirado(punto_inicio[0], punto_inicio[1], punto_fin[0], punto_fin[1])
+                        
+                        # Lo añadimos a la lista de renderizado
+                        self.lista_cables.append(nuevo_cable)
+                        
+                        # También guardas el registro en tu diccionario interno para saber que esa figura ya se usó
+                        self.conexiones_hechas[self.seleccion_izquierda] = letra
+                        # Reseteamos la selección para la próxima conexión
+                        self.seleccion_izquierda = None
+                        
+                        # Verificar si completó el puzzle entero
+                        self.verificar_puzzle()
+                        return
