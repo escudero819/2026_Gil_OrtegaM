@@ -70,12 +70,12 @@ class PlantioView(InteraccionBase):
         if self.descartador_interaccion.collides_with_point((x, y)):
             self.partida.window.show_view(self.descartador)
 
-
     def _verificar(self):
         for nutriente in self.nutrientes.keys():
             if self.nutrientes[nutriente] != self.solucion[nutriente]:
                 if self.solucionado:
                     self._no_solucionado()
+                return
         self._solucionado()
 
     def _solucionado(self):

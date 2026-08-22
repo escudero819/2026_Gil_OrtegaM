@@ -1,5 +1,5 @@
 import arcade
-import os, math, asyncio, threading
+import os, math, asyncio, threading, time
 from clases.salas.sala_base import Interactuable, Objeto
 from clases.personajes.ingeniero import Ingeniero
 from configuraciones import Constantes as consts
@@ -9,13 +9,16 @@ CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 SCREEN_TITLE = "Sala 1 - Mapa Animado Dinámico"
 velocidad_jugador_click = 7
 
+RUTA_ESTRUENDO = os.path.join(CURRENT_PATH, "sonidos", "estruendo.mp3")
+
 class SalaActualView(arcade.View):
-    def __init__(self, sala_instanciada, manager):
+    def __init__(self, sala_instanciada, manager, lim_tiempo):
         super().__init__()
         self.sala = sala_instanciada
         self.manager = manager
         self.texto_inicial = False
         self.sala.InstanciarInterfaces(self)
+        self.lim_tiempo = lim_tiempo
         
         # En el __init__ solo definimos las propiedades vacías
         self.jugador = None
@@ -47,6 +50,14 @@ class SalaActualView(arcade.View):
 
         # Control de voz (edge-tts / arcade sound player)
         self.reproductor_audio = None
+
+        self.bandera_estruendo = time.time()
+        self.estruendo = arcade.load_sound(RUTA_ESTRUENDO)
+        self.volumen_estruendo = 0.4
+        self.tempo_estruendo = 5
+
+    def reproducir_estruendo(self):
+        arcade.play_sound(self.estruendo, volume=self.volumen_estruendo)
 
     def ejecutar_dialogo(self, texto: str, voz: str = "es-ES-AlvaroNeural", velocidad: str = "+0%", tono: str = "+0Hz"):
         """
@@ -220,6 +231,11 @@ class SalaActualView(arcade.View):
         self.interfaz_texto.text = ""
         self.mostrar_cuadro_texto = True
 
+    def Escapar(self):
+        print("HAS SALIDOOOO")
+        self.pausar_estruendo()
+        self.window.show_view(self.manager)
+
     def on_update(self, delta_time: float):
         self.bg_timer += delta_time
         if self.bg_timer >= 0.4:
@@ -241,9 +257,7 @@ class SalaActualView(arcade.View):
         salida_alcanzada = arcade.check_for_collision_with_list(self.jugador, self.sala.lista_salida)
 
         if salida_alcanzada:
-            print("HAS SALIDOOOO")
-            self.window.show_view(self.manager)
-            return
+            self.escapar()
 
         teclado_activo = self.jugador.move_left or self.jugador.move_right or self.jugador.move_up or self.jugador.move_down
 
@@ -291,6 +305,10 @@ class SalaActualView(arcade.View):
                     self.indice_letra += 1
                     
                     self.interfaz_texto.text = self.texto_actual
+
+        if time.time() - self.bandera_estruendo > self.tempo_estruendo:
+            self.reproducir_estruendo()
+            self.bandera_estruendo = time.time()
 
     def ejecutar_interaccion(self, interactuable):
         print(f"Ejecutando función de interacción: {interactuable.funcion.__name__}")

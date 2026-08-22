@@ -1,22 +1,36 @@
 import arcade
-import os, math
+import os, math, asyncio, threading, time
 from clases.salas.sala_base import Interactuable, Objeto
 from clases.personajes.ingeniero import Ingeniero
 from configuraciones import Constantes as consts
 import edge_tts
+
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 SCREEN_TITLE = "Sala 1 - Mapa Animado Dinámico"
 velocidad_jugador_click = 7
 
+# ================= RUTAS DE SONIDOS Y MÚSICAS (CONFIGURACIÓN) =================
+RUTA_ESTRUENDO = os.path.join(CURRENT_PATH, "sonidos", "estruendo.mp3")
+RUTA_MUSICA_DESENLACE = os.path.join(CURRENT_PATH, "sonidos", "musica_fondo_final.mp3") # Clímax últimos 15 seg
+RUTA_SONIDO_DERROTA_1 = os.path.join(CURRENT_PATH, "sonidos", "agua_corriendo.mp3")
+RUTA_SONIDO_DERROTA_2 = os.path.join(CURRENT_PATH, "sonidos", "derrumbe.mp3")
+# ==============================================================================
+
 class SalaActualView(arcade.View):
-    def __init__(self, sala_instanciada, manager):
+    def __init__(self, sala_instanciada, manager, lim_tiempo):
         super().__init__()
         self.sala = sala_instanciada
         self.manager = manager
         self.texto_inicial = False
         self.sala.InstanciarInterfaces(self)
         
-        # En el __init__ solo definimos las propiedades vacías
+        # --- Control del Temporizador de Sala ---
+        self.lim_tiempo = lim_tiempo
+        self.tiempo_inicio = None
+        self.tiempo_restante = lim_tiempo
+        self.tiempo_agotado = False
+
+        # Propiedades del jugador y físicas
         self.jugador = None
         self.jugador_lista = None
         self.motor_fisica = None
@@ -31,60 +45,97 @@ class SalaActualView(arcade.View):
         self.current_bg_index = 0
         self.bg_timer = 0.0
 
-        # variables para la logica de la caja de texto emergente
+        # Variables para la caja de texto emergente
         self.mostrar_cuadro_texto = False
-        self.texto_completo = ""       # El texto total que queremos mostrar
-        self.texto_actual = ""         # Lo que se va escribiendo en pantalla poco a poco
-        self.indice_letra = 0          # En qué letra del string vamos
-        
-        # Temporizadores para las letras
+        self.texto_completo = ""       
+        self.texto_actual = ""         
+        self.indice_letra = 0          
         self.temporizador_letra = 0.0
-        self.VELOCIDAD_TEXTO = 0.03    # Tiempo en segundos entre cada letra (0.03 es ideal)
-        
-        # El objeto de texto de Arcade
+        self.VELOCIDAD_TEXTO = 0.03    
         self.interfaz_texto = None
+        self.reproductor_audio = None
+
+        # --- Control de Estruendos y Audios ---
+        self.bandera_estruendo = time.time()
+        self.estruendo = arcade.load_sound(RUTA_ESTRUENDO)
+        self.volumen_estruendo = 0.2
+        self.tempo_estruendo = 7.0   # Empieza espaciado (7s) y bajará hacia 2s
+
+        # Control del clímax final
+        self.musica_desenlace = arcade.load_sound(RUTA_MUSICA_DESENLACE)
+        self.desenlace_activado = False
+        self.reproductor_desenlace = None
+
+        # Objeto de texto del temporizador (Arriba a la derecha)
+        self.texto_reloj = None
+
+    def reproducir_estruendo(self):
+        arcade.play_sound(self.estruendo, volume=self.volumen_estruendo)
+
+    def sonidos_derrota(self):
+        """Secuencia de sonidos ejecutados al consumirse todo el tiempo."""
+        try:
+            if os.path.exists(RUTA_SONIDO_DERROTA_1):
+                arcade.play_sound(arcade.load_sound(RUTA_SONIDO_DERROTA_1), volume=0.8)
+            if os.path.exists(RUTA_SONIDO_DERROTA_2):
+                arcade.play_sound(arcade.load_sound(RUTA_SONIDO_DERROTA_2), volume=1.0)
+        except Exception as e:
+            print(f"[Aviso Audio Derrota]: {e}")
+
+    def pausar_estruendo(self):
+        if self.reproductor_desenlace:
+            arcade.stop_sound(self.reproductor_desenlace)
+            self.reproductor_desenlace = None
+
+    def ejecutar_dialogo(self, texto: str, voz: str = "es-ES-AlvaroNeural", velocidad: str = "+0%", tono: str = "+0Hz"):
+        self.mostrar_texto(texto)
 
     def on_show_view(self):
-        """ 
-        MÉTODO CRÍTICO: Se ejecuta cuando el menú hace el cambio a esta vista.
-        Aquí la ventana ya existe de forma activa, por lo que es seguro cargar personajes y físicas.
-        """
-        # Instanciamos al jugador y su lista de sprites de forma segura
+        if self.tiempo_inicio is None:
+            self.tiempo_inicio = time.time()
+            self.bandera_estruendo = time.time()
+
         if not self.jugador:
             self.jugador = Ingeniero(center_x=self.sala.posicion_inicial[0], center_y=self.sala.posicion_inicial[1])
         self.jugador_lista = arcade.SpriteList()
         self.jugador_lista.append(self.jugador)
 
-        # Inicializamos el motor de física con la sala ya cargada
         self.motor_fisica = arcade.PhysicsEngineSimple(self.jugador, self.sala.lista_bloqueos)
 
-        # Inicializamos el objeto de texto en la parte inferior de la ventana
         self.interfaz_texto = arcade.Text(
             text="",
-            x=80,                          # Margen izquierdo para que no toque el borde de la pantalla
-            y=110,                         # Altura interna de la caja de texto
+            x=80,
+            y=110,
             color=arcade.color.WHITE,
             font_size=20,
             font_name="Courier New",             
             bold=True,
             multiline=True,
-            width=self.window.width - 160        # Se adapta al ancho de tu pantalla automáticamente
+            width=self.window.width - 160
         )
 
-        # vemos si hay que decir el texto inicial de la zona
+        # Reloj arriba a la derecha
+        self.texto_reloj = arcade.Text(
+            text="00:00",
+            x=consts.ancho_ventana - 85,
+            y=consts.alto_ventana - 40,
+            color=arcade.color.RED,
+            font_size=22,
+            font_name="Courier New",
+            bold=True,
+            anchor_x="center",
+            anchor_y="center"
+        )
+
         if not self.texto_inicial:
-            self.mostrar_texto(self.sala.texto_inicial)
+            self.ejecutar_dialogo(self.sala.texto_inicial, voz="es-ES-AlvaroNeural", velocidad="+30%", tono="+15Hz")
             self.texto_inicial = True
 
-    """   CONTROL DE MOVIMIENTO COMBINADO    """
-
     def on_key_press(self, key, modifiers):
-
         if key in [arcade.key.UP, arcade.key.W, arcade.key.DOWN, arcade.key.S, arcade.key.LEFT, arcade.key.A, arcade.key.RIGHT, arcade.key.D]:
-            self.moviéndose_por_click = False  # Si el jugador presiona una tecla de movimiento, desactivamos el movimiento por click
-            self.objeto_objetivo = None  # Cancelamos cualquier interacción pendiente
+            self.moviéndose_por_click = False
+            self.objeto_objetivo = None
 
-        # Control de movimiento
         if key == arcade.key.UP or key == arcade.key.W:
             self.jugador.move_up = True
         elif key == arcade.key.DOWN or key == arcade.key.S:
@@ -93,13 +144,10 @@ class SalaActualView(arcade.View):
             self.jugador.move_left = True
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.jugador.move_right = True
-            
-        # Cerrar la ventana si se presiona la tecla de Escape
         elif key == arcade.key.ESCAPE:
             arcade.exit()
 
     def on_key_release(self, key, modifiers):
-        # Desactivar intenciones de movimiento
         if key == arcade.key.UP or key == arcade.key.W:
             self.jugador.move_up = False
         elif key == arcade.key.DOWN or key == arcade.key.S:
@@ -111,40 +159,27 @@ class SalaActualView(arcade.View):
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
         if button == arcade.MOUSE_BUTTON_LEFT:
-
             if self.mostrar_cuadro_texto:
-                 # Si ya se terminó de escribir todo el texto
                 if self.indice_letra >= len(self.texto_completo):
-                    self.mostrar_cuadro_texto = False  # Oculta la caja y deja seguir jugando
+                    self.mostrar_cuadro_texto = False
+                    if self.reproductor_audio:
+                        arcade.stop_sound(self.reproductor_audio)
+                        self.reproductor_audio = None
                     return
 
             self.moviéndose_por_click = True
-
-            # 1. Detectar si el clic colisionó con algún mueble interactuable
-            objetos_cliqueados = arcade.get_sprites_at_point((x, y), self.sala.lista_bloqueos)  # Verificamos contra los bloqueos porque los interactuables también están ahí
-            print(f"Objetos cliqueados: {objetos_cliqueados}")
+            objetos_cliqueados = arcade.get_sprites_at_point((x, y), self.sala.lista_bloqueos)
             
-            if objetos_cliqueados:
-                if isinstance(objetos_cliqueados[0], Interactuable):
-                    # Si tocamos un mueble, fijamos ese mueble como objetivo
-                    self.objeto_objetivo = objetos_cliqueados[0]
-                    self.jugador.destino_x = self.objeto_objetivo.ubicacion_jugador["x"]
-                    self.jugador.destino_y = self.objeto_objetivo.ubicacion_jugador["y"]
-                    print(self.jugador.destino_x)
-            
+            if objetos_cliqueados and isinstance(objetos_cliqueados[0], Interactuable):
+                self.objeto_objetivo = objetos_cliqueados[0]
+                self.jugador.destino_x = self.objeto_objetivo.ubicacion_jugador["x"]
+                self.jugador.destino_y = self.objeto_objetivo.ubicacion_jugador["y"]
             else:
-                # Si hizo clic al suelo, solo se mueve, no hay interacción pendiente
                 self.objeto_objetivo = None
                 self.jugador.destino_x = x
                 self.jugador.destino_y = y
-            
-            print(f"Clic en: ({x}, {y}) - Objetivo: {self.objeto_objetivo} - Destino: ({self.jugador.destino_x}, {self.jugador.destino_y})")
-
-
-    """  LÓGICA DE JUEGO Y DIBUJADO    """
 
     def mostrar_texto(self, mensaje_nuevo):
-        """ Configura y arranca la animación de letras desde cero """
         self.texto_completo = mensaje_nuevo
         self.texto_actual = ""
         self.indice_letra = 0
@@ -152,143 +187,162 @@ class SalaActualView(arcade.View):
         self.interfaz_texto.text = ""
         self.mostrar_cuadro_texto = True
 
+    def Escapar(self):
+        print("HAS SALIDOOOO")
+        self.pausar_estruendo()
+        self.window.show_view(self.manager)
+
     def on_update(self, delta_time: float):
-        #actualizar temporizador de la animación del fondo
+        # 1. Actualización del reloj de tiempo límite
+        tiempo_transcurrido = time.time() - self.tiempo_inicio
+        self.tiempo_restante = max(0, self.lim_tiempo - tiempo_transcurrido)
+
+        minutos = int(self.tiempo_restante // 60)
+        segundos = int(self.tiempo_restante % 60)
+        if self.texto_reloj:
+            self.texto_reloj.text = f"{minutos:02d}:{segundos:02d}"
+
+        # 2. Ajuste dinámico de estruendos según el progreso (0.0 al inicio -> 1.0 al final)
+        progreso = min(1.0, tiempo_transcurrido / self.lim_tiempo)
+        self.volumen_estruendo = 0.2 + (0.6 * progreso)        # Aumenta de 0.2 a 0.8
+        self.tempo_estruendo = max(1.5, 7.0 - (5.0 * progreso)) # Reduce el intervalo de 7s a 2s
+
+        # 3. Clímax (Últimos 15 segundos)
+        if self.tiempo_restante <= 15.0 and not self.desenlace_activado and not self.tiempo_agotado:
+            self.desenlace_activado = True
+            if hasattr(self.manager, "pausar_todo"):
+                self.manager.pausar_todo()
+            elif hasattr(self.manager, "pausar_musica"):
+                self.manager.pausar_musica()
+
+            try:
+                self.reproductor_desenlace = arcade.play_sound(self.musica_desenlace, volume=0.8, loop=False)
+            except Exception as e:
+                print(f"[Aviso Desenlace]: {e}")
+
+        # 4. Derrota por límite de tiempo
+        if self.tiempo_restante <= 0 and not self.tiempo_agotado:
+            self.tiempo_agotado = True
+            self.pausar_estruendo()
+            self.sonidos_derrota()
+            time.sleep(2)
+            from game_over import Game_Over
+            vista_game_over = Game_Over("agua") # Cambiar a por tiempo
+            self.window.show_view(vista_game_over)
+            return
+
+        # Animación de fondo
         self.bg_timer += delta_time
         if self.bg_timer >= 0.4:
             self.bg_timer = 0.0
-            # Cambiar textura del fondo (flicker)
             self.current_bg_index = (self.current_bg_index + 1) % len(self.sala.fondo_texturas)
             self.sala.fondo_sprite.texture = self.sala.fondo_texturas[self.current_bg_index]
 
-        # verificamos si toco un eliminador (si es que hay)
+        # Colisiones de eliminación
         if self.sala.lista_eliminadores:
-            contacto = arcade.check_for_collision_with_list(self.jugador, self.sala.lista_eliminadores)
-
-            if contacto:
-                print("has perdido por tocar el agua electrificada")
-
+            if arcade.check_for_collision_with_list(self.jugador, self.sala.lista_eliminadores):
+                self.pausar_estruendo()
                 from game_over import Game_Over
                 vista_game_over = Game_Over("agua")
                 self.window.show_view(vista_game_over)
                 return
             
-        #verificamos si ha tocado la salida
-        salida_alcanzada = arcade.check_for_collision_with_list(self.jugador, self.sala.lista_salida)
-
-        if salida_alcanzada:
-            print("HAS SALIDOOOO")
-            self.window.show_view(self.manager)
+        # Salida alcanzada
+        if arcade.check_for_collision_with_list(self.jugador, self.sala.lista_salida):
+            self.Escapar()
             return
 
-        # LÓGICA DE CONTROL DE MOVIMIENTO COMBINADO
-        # Verificamos si el usuario está presionando activamente alguna tecla WASD/Flechas
-        teclado_activo = self.jugador.move_left or self.jugador.move_right or self.jugador.move_up or self.jugador.move_down
-
-        if teclado_activo:
-            # Si usa el teclado, manda el teclado
+        # Movimiento
+        if self.jugador.move_left or self.jugador.move_right or self.jugador.move_up or self.jugador.move_down:
             self.jugador.update_por_teclado()
         elif self.moviéndose_por_click:
-            # Si no hay teclado pero el click está activo, calculamos ruta hacia el destino
-            llegamos_al_destino = self.jugador.update_por_click()
-            if llegamos_al_destino:
-                print("Destino alcanzado")
+            if self.jugador.update_por_click():
                 self.moviéndose_por_click = False
                 if self.objeto_objetivo is not None:
-                    self.objetivo_alcanzado = True  # Marcamos que hemos alcanzado el objetivo para ejecutar la interacción en el siguiente ciclo de actualización
-
+                    self.objetivo_alcanzado = True
         else:
-            # Si no hay estímulos, el personaje se queda quieto
             self.jugador.change_x = 0
             self.jugador.change_y = 0
         
-        # Actualizar física (por si choca con un muro invisible mientras camina)
         self.motor_fisica.update()
         
-        if self.objeto_objetivo is not None:
-            
-            if self.objetivo_alcanzado:  
-                # PASO 1: En este frame frenamos al jugador y dejamos que se aplique la textura Idle
-                self.moviéndose_por_click = False
-                self.jugador.change_x = 0
-                self.jugador.change_y = 0
+        if self.objeto_objetivo is not None and self.objetivo_alcanzado:
+            self.moviéndose_por_click = False
+            self.jugador.change_x = 0
+            self.jugador.change_y = 0
+            self.listo_para_interactuar = True
+            self.objetivo_alcanzado = False
                 
-                # Activamos una nueva bandera interna para indicar que el juego ya lo registró quieto
-                self.listo_para_interactuar = True
-                self.objetivo_alcanzado = False # Apagamos para que no vuelva a entrar aquí
-                
-        # PASO 2: En el frame de actualización SUCESIVO (cuando el anterior ya se dibujó en pantalla)
-        # disparamos la interfaz emergente de forma limpia
         if getattr(self, 'listo_para_interactuar', False):
-            self.listo_para_interactuar = False # Reseteamos la bandera
-            
+            self.listo_para_interactuar = False
             mueble_actual = self.objeto_objetivo
             self.objeto_objetivo = None 
-            
-            print(f"Ejecutando función de interacción: {mueble_actual.funcion.__name__}")
             mueble_actual.funcion(self)      
         
-        # ANIMACIÓN DE TEXTO GRADUAL (MÁQUINA DE ESCRIBIR)
-        if self.mostrar_cuadro_texto:
-            # Si todavía faltan letras por escribir del mensaje completo
-            if self.indice_letra < len(self.texto_completo):
-                self.temporizador_letra += delta_time
-                
-                # Cuando pasa el tiempo configurado, añadimos el siguiente caracter
-                if self.temporizador_letra >= self.VELOCIDAD_TEXTO:
-                    self.temporizador_letra = 0.0
-                    self.texto_actual += self.texto_completo[self.indice_letra]
-                    self.indice_letra += 1
-                    
-                    # Actualizamos el contenido visual del objeto de texto
-                    self.interfaz_texto.text = self.texto_actual
+        if self.mostrar_cuadro_texto and self.indice_letra < len(self.texto_completo):
+            self.temporizador_letra += delta_time
+            if self.temporizador_letra >= self.VELOCIDAD_TEXTO:
+                self.temporizador_letra = 0.0
+                self.texto_actual += self.texto_completo[self.indice_letra]
+                self.indice_letra += 1
+                self.interfaz_texto.text = self.texto_actual
 
-    def ejecutar_interaccion(self, interactuable):
-        # Aquí disparas la lógica del Escape Room
-        print(f"Ejecutando función de interacción: {interactuable.funcion.__name__}")
-        interactuable.funcion(self)
+        # Reproducción periódica del estruendo dinámico
+        if time.time() - self.bandera_estruendo > self.tempo_estruendo:
+            self.reproducir_estruendo()
+            self.bandera_estruendo = time.time()
 
     def on_draw(self):
         self.clear()
 
-        #self.sala.draw()
         self.sala.fondo_lista.draw()
-        self.sala.lista_bloqueos.draw()  # Para depuración, muestra las paredes invisibles  
-        
-        # 2. Dibujar el personaje
+        self.sala.lista_bloqueos.draw()  
         self.jugador_lista.draw()
-        self.sala.interactuables_sprites.draw()  # Dibujar los muebles interactuables
-
+        self.sala.interactuables_sprites.draw()
         self.sala.lista_salida.draw()
 
+        # --- Recuadro y Texto del Temporizador (Arriba a la derecha) ---
+        ancho_caja = 130
+        alto_caja = 50
+        margen_der = 20
+        margen_arr = 15
+
+        arcade.draw_lbwh_rectangle_filled(
+            left=consts.ancho_ventana - ancho_caja - margen_der,
+            bottom=consts.alto_ventana - alto_caja - margen_arr,
+            width=ancho_caja,
+            height=alto_caja,
+            color=(0, 0, 0, 220)
+        )
+        arcade.draw_lbwh_rectangle_outline(
+            left=consts.ancho_ventana - ancho_caja - margen_der,
+            bottom=consts.alto_ventana - alto_caja - margen_arr,
+            width=ancho_caja,
+            height=alto_caja,
+            color=arcade.color.RED,
+            border_width=2
+        )
+
+        if self.texto_reloj:
+            self.texto_reloj.draw()
+
+        # Cuadro de diálogo
         if self.mostrar_cuadro_texto:
             ancho_pantalla = self.window.width
-            
-            # Configuramos las coordenadas de la caja usando la esquina inferior izquierda como base
-            margen_izquierdo = 40
-            borde_inferior = 25
-            ancho_caja = ancho_pantalla - 80
-            alto_caja = 110
-
-            # 1. Fondo de la caja (Left, Bottom, Width, Height)
             arcade.draw_lbwh_rectangle_filled(
-                left=margen_izquierdo,
-                bottom=borde_inferior,
-                width=ancho_caja,
-                height=alto_caja,
+                left=40,
+                bottom=25,
+                width=ancho_pantalla - 80,
+                height=110,
                 color=(15, 15, 15, 230)
             )
-            
-            # 2. Borde de la caja
             arcade.draw_lbwh_rectangle_outline(
-                left=margen_izquierdo,
-                bottom=borde_inferior,
-                width=ancho_caja,
-                height=alto_caja,
+                left=40,
+                bottom=25,
+                width=ancho_pantalla - 80,
+                height=110,
                 color=arcade.color.WHITE,
                 border_width=3
             )
-            
-            # 3. Renderizar las letras que se están escribiendo
             if self.interfaz_texto:
                 self.interfaz_texto.draw()

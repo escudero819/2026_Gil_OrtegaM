@@ -61,6 +61,13 @@ class DestiladorView(InteraccionBase):
             else:
                 self.cambiar_fondo(fondo_con_quimicos)
 
+        if self.estado == "terminado":
+            self.cambiar_fondo(fondo_terminado)
+            self._tarrito()
+
+        if self.estado == "final":
+            self.cambiar_fondo(fondo_final)
+
 
     def on_update(self, delta_time):
         super().on_update(delta_time)

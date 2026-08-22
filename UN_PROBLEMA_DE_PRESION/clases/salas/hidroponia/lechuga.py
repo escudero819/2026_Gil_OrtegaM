@@ -10,9 +10,9 @@ fondo = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/lechuga.png")
 computadora = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/comp_lech.png")
 
 solucion = {
-    "potasio": 1,
-    "nitrogeno": 2,
-    "fosforo": 2,
+    "potasio": 4,
+    "nitrogeno": 6,
+    "fosforo": 2
 }
 
 class LechugaView(PlantioView):

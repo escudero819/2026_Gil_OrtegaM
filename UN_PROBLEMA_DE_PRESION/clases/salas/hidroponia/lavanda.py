@@ -11,9 +11,9 @@ computadora = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/comp_lava
 
 
 solucion = {
-    "potasio": 1,
-    "nitrogeno": 2,
-    "fosforo": 2,
+    "potasio": 7,
+    "nitrogeno": 5,
+    "fosforo": 3
 }
 
 class LavandaView(PlantioView):

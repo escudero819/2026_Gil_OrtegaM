@@ -108,10 +108,14 @@ class PuzzleMedidor(InteraccionBase):
             self.seleccion = "amarillo"
 
         if self.medidor.collides_with_point((x, y)):
-            if self.combinacion:
+            if self.combinacion == True:
                 self.sala.inventario.agregar_objeto("combinacion final")
                 self.combinacion_tomada = True
                 self.lista_medidor = None
+
+            elif self.combinacion == False:
+                self.quimicos_colocados = []
+                self.combinacion = None
 
             if self.seleccion and len(self.quimicos_colocados) < self.limite_quimicos:
                 self.quimicos_colocados.append(self.seleccion)

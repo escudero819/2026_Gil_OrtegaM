@@ -17,9 +17,9 @@ class PuertaView(InteraccionBase):
         self.partida = partida
         self.sala = partida.sala
         self.estado = {
-            "lechuga": True,
-            "margarita": True,
-            "lavanda": True
+            "lechuga": False,
+            "margarita": False,
+            "lavanda": False
         }
         self.fondo = fondo
         self.lechuga = None

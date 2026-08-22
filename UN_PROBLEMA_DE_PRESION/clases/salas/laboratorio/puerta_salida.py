@@ -67,5 +67,5 @@ class PuertaView(InteraccionBase):
 
         elif self.estado == "final":
             print("saliendo del laboratorio")
-            self.partida.window.show_view(self.partida.manager)
+            self.partida.Escapar()
         

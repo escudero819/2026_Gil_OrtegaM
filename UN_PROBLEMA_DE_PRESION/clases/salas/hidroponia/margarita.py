@@ -11,8 +11,8 @@ computadora = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/comp_marg
 
 solucion = {
     "potasio": 1,
-    "nitrogeno": 2,
-    "fosforo": 2,
+    "nitrogeno": 4,
+    "fosforo": 5
 }
 
 class MargaritaView(PlantioView):

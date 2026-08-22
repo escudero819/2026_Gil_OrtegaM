@@ -7,7 +7,7 @@ from clases.salas.tuberias.sala_tuberias import Sala_Tuberias
 from clases.salas.almacen.sala_almacen import Sala_Almacen
 from clases.salas.laboratorio.sala_laboratorio import Sala_Laboratorio
 from clases.salas.hidroponia.sala_hidroponia import Sala_Hidroponia
-from sala_instanciada1 import SalaActualView
+from sala_instanciada import SalaActualView
 from configuraciones import Constantes as const
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -18,6 +18,9 @@ RUTAS_VIDEOS = {
     "transicion_laboratorio": os.path.join(CURRENT_PATH, "transiciones", "transicion_sala3.mp4"),
     "transicion_hidroponia": os.path.join(CURRENT_PATH, "transiciones", "transicion_sala4.mp4"),
 }
+
+RUTA_MUSICA_GLOBAL = os.path.join(CURRENT_PATH, "sonidos", "musica_fondo_basica.MP3") # Ajusta la ruta a tu archivo
+RUTA_SONIDO_AGUA = os.path.join(CURRENT_PATH, "sonidos", "agua_fondo.mp3")
 
 class Manager(arcade.View):
     def __init__(self):
@@ -33,6 +36,13 @@ class Manager(arcade.View):
         self.frame_time = 1.0 / self.fps
         self.timer = 0.0
 
+        # Control de música global continua
+        self.musica_fondo = None
+        self.agua_fondo = None
+        self.reproductor_agua = None
+        self.reproductor_musica = None
+        self._iniciar_musica_global()
+
     def iniciar_video(self, ruta):
         if not os.path.exists(ruta):
             print(f"[ERROR VIDEO] No se encontró el archivo: {ruta}")
@@ -42,6 +52,8 @@ class Manager(arcade.View):
         if not self.cap.isOpened():
             print(f"[ERROR VIDEO] No se pudo decodificar el video: {ruta}")
             return False
+
+        self.pausar_musica()
 
         fps_video = self.cap.get(cv2.CAP_PROP_FPS)
         if fps_video > 0:
@@ -67,9 +79,38 @@ class Manager(arcade.View):
                 return False
         return False
 
+    def _iniciar_musica_global(self):
+        """Carga e inicia la música de fondo en loop infinito."""
+        if os.path.exists(RUTA_MUSICA_GLOBAL):
+            try:
+                self.musica_fondo = arcade.load_sound(RUTA_MUSICA_GLOBAL)
+                # loop=True para que se repita siempre
+                self.reproductor_musica = arcade.play_sound(self.musica_fondo, volume=0.25, loop=True)
+
+                self.agua_fondo = arcade.load_sound(RUTA_SONIDO_AGUA)
+                
+                self.reproductor_agua = arcade.play_sound(self.agua_fondo, volume=0.6, loop=True)
+
+            except Exception as e:
+                print(f"[Error Musica Global] No se pudo reproducir: {e}")
+
+    def pausar_musica(self):
+        """Útil si quieres silenciar la música durante las cinemáticas/videos."""
+        if self.reproductor_musica:
+            arcade.stop_sound(self.reproductor_musica)
+            self.reproductor_musica = None
+
+    def reanudar_musica(self):
+        """Vuelve a arrancar la música si fue pausada."""
+        if not self.reproductor_musica and self.musica_fondo:
+            self.reproductor_musica = arcade.play_sound(self.musica_fondo, volume=0.25, loop=True)
+        if not self.reproductor_agua and self.agua_fondo:
+            self.reproductor_agua = arcade.play_sound(self.agua_fondo, volume=0.6, loop=True)
+
     def _avanzar_siguiente_sala(self):
         """Lógica para cargar la siguiente sala tras terminar el video o si este no existe."""
         self.textura_actual = None
+        self.reanudar_musica()
 
         if self.sala_actual == "tuberias":
             self.sala_actual = "almacen"
@@ -116,7 +157,7 @@ class Manager(arcade.View):
         if self.sala_actual == "ninguna":
             if time.time() - self.temporizador_inicio > 1.0:
                 self.sala_actual = "tuberias"
-                self.sala = SalaActualView(Sala_Tuberias(), self)
+                self.sala = SalaActualView(Sala_Tuberias(), self, 60)
                 self.window.show_view(self.sala)
 
         # Si hay un video en reproducción
