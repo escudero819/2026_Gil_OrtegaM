@@ -1,0 +1,71 @@
+{
+  "group_id": "17163989-4c20-496a-9bae-4b49fcad819d",
+  "states": [
+    {
+      "character": {
+        "id": "18d961c8-7ac3-4faa-9338-9572daae4331",
+        "name": "Idle",
+        "prompt": "Pixel art game character sprite, based on a young underground laboratory engineer and mechanic.\n\nA low top-down 3/4 view, seen slightly from above but still showing the front and top of the character. The character should face mostly toward the camera, with a slight diagonal orientation. Keep the body proportions and appearance consistent with a classic pixel-art adventure game character.\n\nYoung adult male engineer, short dark brown hair, light-medium warm skin tone, simple neutral face, dark navy blue mechanic jumpsuit with long sleeves, two chest pockets, dark work boots.\n\nSimple, clean and readable silhouette. Dark navy work uniform with subtle pixel shading and a few lighter blue-gray highlights. No complex accessories, no tools in his hands, no backpack, no helmet.\n\nRetro pixel art aesthetic, crisp hard pixel edges, limited color palette, small amount of shading, no anti-aliasing, no smooth gradients, no outlines that are excessively thick.\n\nDesigned as a small playable game sprite. The character must remain clearly recognizable when rendered at approximately 40x40 to 80x80 pixels.\n\nSingle character, full body, centered, standing idle, transparent or plain background, no environment, no text, no UI, no shadows outside the character.\n\nIMPORTANT: low top-down perspective, NOT a completely vertical top-down view. The front of the torso, face and legs must remain visible.\n",
+        "size": {
+          "width": 64,
+          "height": 64
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-08-24T22:14:50.255636+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {
+          "Walking": {
+            "north": [
+              "Idle/animations/Walking/north/frame_000.png",
+              "Idle/animations/Walking/north/frame_001.png",
+              "Idle/animations/Walking/north/frame_002.png",
+              "Idle/animations/Walking/north/frame_003.png",
+              "Idle/animations/Walking/north/frame_004.png",
+              "Idle/animations/Walking/north/frame_005.png"
+            ],
+            "east": [
+              "Idle/animations/Walking/east/frame_000.png",
+              "Idle/animations/Walking/east/frame_001.png",
+              "Idle/animations/Walking/east/frame_002.png",
+              "Idle/animations/Walking/east/frame_003.png",
+              "Idle/animations/Walking/east/frame_004.png",
+              "Idle/animations/Walking/east/frame_005.png"
+            ],
+            "west": [
+              "Idle/animations/Walking/west/frame_000.png",
+              "Idle/animations/Walking/west/frame_001.png",
+              "Idle/animations/Walking/west/frame_002.png",
+              "Idle/animations/Walking/west/frame_003.png",
+              "Idle/animations/Walking/west/frame_004.png",
+              "Idle/animations/Walking/west/frame_005.png"
+            ],
+            "south": [
+              "Idle/animations/Walking/south/frame_000.png",
+              "Idle/animations/Walking/south/frame_001.png",
+              "Idle/animations/Walking/south/frame_002.png",
+              "Idle/animations/Walking/south/frame_003.png",
+              "Idle/animations/Walking/south/frame_004.png",
+              "Idle/animations/Walking/south/frame_005.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-08-24T22:24:25.525532"
+}

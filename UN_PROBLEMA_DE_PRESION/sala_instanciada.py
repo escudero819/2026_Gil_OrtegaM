@@ -87,7 +87,75 @@ class SalaActualView(arcade.View):
             arcade.stop_sound(self.reproductor_desenlace)
             self.reproductor_desenlace = None
 
+
     def ejecutar_dialogo(self, texto: str, voz: str = "es-ES-AlvaroNeural", velocidad: str = "+0%", tono: str = "+0Hz"):
+        """
+        Ejecuta voz y texto sincronizados.
+        - velocidad: p. ej. '+25%' para desesperación/alarma, '-10%' para lentitud.
+        - tono: p. ej. '+15Hz' para tono agudo/tembloroso, '-10Hz' para voz grave.
+        """
+        """
+        # Detenemos cualquier audio anterior
+        if self.reproductor_audio:
+            arcade.stop_sound(self.reproductor_audio)
+            self.reproductor_audio = None
+
+        # 1. Crear un nombre único de archivo según el texto y entonación (Sistema de Caché)
+        # Usamos hash para que textos iguales reutilicen el mismo MP3 ya descargado
+        id_audio = abs(hash(f"{texto}_{voz}_{velocidad}_{tono}"))
+        carpeta_cache = os.path.join(CURRENT_PATH, "cache_audio")
+        os.makedirs(carpeta_cache, exist_ok=True)
+        archivo_audio = os.path.join(carpeta_cache, f"dialogo_{id_audio}.mp3")
+
+        # 2. Si el audio YA EXISTE en caché, se reproduce AL INSTANTE (sin lag)
+        if os.path.exists(archivo_audio):
+            try:
+                audio = arcade.load_sound(archivo_audio)
+                self.reproductor_audio = arcade.play_sound(audio)
+                self.mostrar_texto(texto)
+                return
+            except Exception as e:
+                print(f"[Aviso Caché] Error cargando audio existente: {e}")
+
+        # 3. Si no existe, lo descargamos asíncronamente en segundo plano
+        async def _generar_audio():
+            try:
+                # Usamos los parámetros rate y pitch nativos en lugar de código XML/SSML
+                comunicador = edge_tts.Communicate(
+                    text=texto, 
+                    voice=voz, 
+                    rate=velocidad, 
+                    pitch=tono
+                )
+                await comunicador.save(archivo_audio)
+                return True
+            except Exception as e:
+                print(f"[Aviso Edge-TTS] Error de red al generar voz: {e}")
+                return False
+
+        def _hilo_trabajador():
+            try:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                exito = loop.run_until_complete(_generar_audio())
+                loop.close()
+
+                if exito:
+                    def _reproducir_en_pantalla(dt):
+                        if os.path.exists(archivo_audio):
+                            try:
+                                audio = arcade.load_sound(archivo_audio)
+                                self.reproductor_audio = arcade.play_sound(audio)
+
+                            except Exception as audio_err:
+                                print(f"[Aviso Audio] Falló la carga del MP3: {audio_err}")
+
+                    arcade.schedule_once(_reproducir_en_pantalla, 0)
+            except Exception as thread_err:
+                print(f"[Aviso Hilo Voice] Error secundario ignorado: {thread_err}")
+
+        threading.Thread(target=_hilo_trabajador, daemon=True).start()
+        """
         self.mostrar_texto(texto)
 
     def on_show_view(self):
@@ -204,8 +272,8 @@ class SalaActualView(arcade.View):
 
         # 2. Ajuste dinámico de estruendos según el progreso (0.0 al inicio -> 1.0 al final)
         progreso = min(1.0, tiempo_transcurrido / self.lim_tiempo)
-        self.volumen_estruendo = 0.2 + (0.6 * progreso)        # Aumenta de 0.2 a 0.8
-        self.tempo_estruendo = max(1.5, 7.0 - (5.0 * progreso)) # Reduce el intervalo de 7s a 2s
+        self.volumen_estruendo = 0.1 + (0.6 * progreso)        # Aumenta de 0.1 a 0.8
+        self.tempo_estruendo = max(1.5, 10.0 - (5.0 * progreso)) # Reduce el intervalo de 10s a 2s
 
         # 3. Clímax (Últimos 15 segundos)
         if self.tiempo_restante <= 15.0 and not self.desenlace_activado and not self.tiempo_agotado:

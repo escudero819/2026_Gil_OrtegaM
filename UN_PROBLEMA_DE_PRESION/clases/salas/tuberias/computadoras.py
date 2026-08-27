@@ -9,6 +9,9 @@ izquierda_apagada = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/com
 izquierda_prendida = arcade.load_texture(CURRENT_PATH + "/texturas/interfaces/computadoras/izq/prendida.png")
 transparente = arcade.load_texture(os.path.join(CURRENT_PATH, "..", "transparente.png"))
 
+ruta_boton = os.path.join(CURRENT_PATH, "sonidos", "boton.mp3")
+sonido_boton = arcade.load_sound(ruta_boton)
+
 class PCInterfaz(arcade.View):
 
     def __init__(self, partida, tipo: str):
@@ -72,6 +75,7 @@ class PCInterfaz(arcade.View):
                         self.cambiar_fondo(izquierda_prendida)
                     self.lista_interaccion.clear()
                     self.estado = "prendida"
+                    arcade.play_sound(sonido_boton, volume=1.0)
             else:
                 self.window.show_view(self.partida)
         else:

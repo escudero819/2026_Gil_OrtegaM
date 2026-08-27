@@ -5,7 +5,7 @@ import os
 import arcade
 # Importamos la vista del juego y la sala correspondientes
 from manager2 import Manager
-
+from introduccion import IntroduccionView
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__)) 
 
 # Constantes de pantalla
@@ -88,7 +88,7 @@ class MenuView(arcade.View):
                 self.btn_iniciar.texture = self.tx_iniciar_normal
                 
                 # ACCIÓN REAL: Aquí lanzas tu juego
-                self.comenzar_juego()
+                self.iniciar_partida()
 
     def on_mouse_press(self, x, y, button, modifiers):
         # Si ya estamos esperando que inicie el juego, bloqueamos nuevos clicks
@@ -117,16 +117,108 @@ class MenuView(arcade.View):
                 # Si soltó el mouse fuera de los botones, reseteamos texturas
                 self.btn_iniciar.texture = self.tx_iniciar_normal
                 self.btn_salir.texture = self.tx_salir_normal
-    
-    def comenzar_juego(self):
-        """ Borra el menú por completo y carga la vista del juego limpia """
-        print("-> Pasando al juego con una ventana vacía e independiente <-")
 
+    def iniciar_partida(self):
         manager = Manager()
-        
-        # Le decimos a la ventana principal que cambie de vista
-        # Esto limpia automáticamente todo lo que MenuView estaba dibujando
-        self.window.show_view(manager)
+        intro = IntroduccionView(manager_siguiente=manager)
+
+        # Agregas tus escenas en el orden narrativo deseado
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/1.png",
+            lista_textos=[
+                "MICHEAL: bueno, no parece haber nada raro",
+                "MICHAEL: me voy a hacer del dos, te delego mi tarea de hacer nada"
+            ]
+        )
+
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/2.png",
+            lista_textos=[
+                "TU: es algo bueno que no hagamos nada, si somos de emergencias",
+                "MICHAEL: ya ya, me voy",
+                "TU: ... "
+            ]
+        )
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/3.png",
+            lista_textos=[
+                "TU: AAH"
+            ]
+        )
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/4.png",
+            lista_textos=[
+                "COMPUTADORA: pequeña fuga en la sala inferior",
+                "TU: okey... no era para tanto entonces"
+            ]
+        )
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/5.png",
+            lista_textos=[
+                "TU: es en la sala e tuberias, vaya que sera un viaje largo"
+            ]
+        )
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/6.png",
+            lista_textos=[
+                "TU: Bueno, andando..."
+            ]
+        )
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/7.png",
+            lista_textos=[
+                "TU: Hola compañera!! ocupada como siempre?",
+                "CIENTIFICA: sep, esto nunca esta estable",
+                "TU: jajaja, suerte con eso!"
+            ]
+        )
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/8.png",
+            lista_textos=[
+                "TU: el laboratorio... siempre con quimicos en todos lados"
+            ]
+        )
+
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/9.png",
+            lista_textos=[
+                "TU: ya casi llegamos, solo tengo que bajar por la escalera"
+            ]
+        )
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/10.png",
+            lista_textos=[
+                "TU: Y voila, llegamos a la ultima sala",
+                "TU: Veamos cual es el problema"
+            ]
+        )
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/11.png",
+            lista_textos=[
+                "TU: no se ve bien pero deberia ser inofencivo"
+            ]
+        )
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/12.png",
+            lista_textos=[
+                "TU: lo es ajustar un poco aca y..."
+            ]
+        )
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/13.png",
+            lista_textos=[
+                "TU: oh no!!! esto es grave",
+                "TU: muy, muy grave"
+            ]
+        )
+        intro.agregar_escena(
+            ruta_imagen=CURRENT_PATH + "/transiciones/narrativa/14.png",
+            lista_textos=[
+                "TU: DEBO SALIR DE AQUI!!!"
+            ]
+        )
+
+        self.window.show_view(intro)
 
 def main(ventana=None):
     if not ventana:

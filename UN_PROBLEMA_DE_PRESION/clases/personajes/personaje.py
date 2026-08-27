@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw
 PLAYER_SPEED = 5
 PLAYER_SPEED_AUTOMATICO = 7
 VELOCIDAD_ANIMACION = 0.07
-
+ESCALA = 1.75
 # --- Clase del Personaje (Player) ---
 class Player(arcade.Sprite):
     def __init__(self, frames_idle, frames_caminando, center_x, center_y):
@@ -25,7 +25,7 @@ class Player(arcade.Sprite):
         }
 
         super().__init__(self.texturas_idle["abajo"], center_x=center_x, center_y=center_y)
-        self.scale = 2.5
+        self.scale = ESCALA
 
         # Definir una caja de colisión personalizada.
         # Los puntos se miden desde el centro (0, 0) del sprite.

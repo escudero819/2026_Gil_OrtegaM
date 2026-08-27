@@ -6,6 +6,8 @@ CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 Colisiones_Transparentes = True
 
+SONIDO_AGARRAR = os.path.join(CURRENT_PATH, "agarrar.mp3")
+
 class Objeto(arcade.Sprite):
 
     def __init__(self, tipo, imagen_path, center_x, center_y):
@@ -55,9 +57,13 @@ class Inventario():
 
     def __init__(self):
         self.lista_objetos = []
+        self.agarre = arcade.load_sound(SONIDO_AGARRAR)
     
-    def agregar_objeto(self, objeto):
+    def agregar_objeto(self, objeto, sonido: arcade.Sound = None):
+        if not sonido:
+            sonido = self.agarre
         self.lista_objetos.append(objeto)
+        arcade.play_sound(sonido, volume= 1.5)
     
     def consultar(self, nombre_objeto):
         for objeto in self.lista_objetos:

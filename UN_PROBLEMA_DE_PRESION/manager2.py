@@ -41,7 +41,6 @@ class Manager(arcade.View):
         self.agua_fondo = None
         self.reproductor_agua = None
         self.reproductor_musica = None
-        self._iniciar_musica_global()
 
     def iniciar_video(self, ruta):
         if not os.path.exists(ruta):
@@ -85,11 +84,11 @@ class Manager(arcade.View):
             try:
                 self.musica_fondo = arcade.load_sound(RUTA_MUSICA_GLOBAL)
                 # loop=True para que se repita siempre
-                self.reproductor_musica = arcade.play_sound(self.musica_fondo, volume=0.25, loop=True)
+                self.reproductor_musica = arcade.play_sound(self.musica_fondo, volume=0.1, loop=True)
 
                 self.agua_fondo = arcade.load_sound(RUTA_SONIDO_AGUA)
                 
-                self.reproductor_agua = arcade.play_sound(self.agua_fondo, volume=0.6, loop=True)
+                self.reproductor_agua = arcade.play_sound(self.agua_fondo, volume=0.4, loop=True)
 
             except Exception as e:
                 print(f"[Error Musica Global] No se pudo reproducir: {e}")
@@ -103,9 +102,9 @@ class Manager(arcade.View):
     def reanudar_musica(self):
         """Vuelve a arrancar la música si fue pausada."""
         if not self.reproductor_musica and self.musica_fondo:
-            self.reproductor_musica = arcade.play_sound(self.musica_fondo, volume=0.25, loop=True)
+            self.reproductor_musica = arcade.play_sound(self.musica_fondo, volume=0.1, loop=True)
         if not self.reproductor_agua and self.agua_fondo:
-            self.reproductor_agua = arcade.play_sound(self.agua_fondo, volume=0.6, loop=True)
+            self.reproductor_agua = arcade.play_sound(self.agua_fondo, volume=0.4, loop=True)
 
     def _avanzar_siguiente_sala(self):
         """Lógica para cargar la siguiente sala tras terminar el video o si este no existe."""
@@ -114,17 +113,17 @@ class Manager(arcade.View):
 
         if self.sala_actual == "tuberias":
             self.sala_actual = "almacen"
-            self.sala = SalaActualView(Sala_Almacen(), self)
+            self.sala = SalaActualView(Sala_Almacen(), self, 480)
             self.window.show_view(self.sala)
 
         elif self.sala_actual == "almacen":
             self.sala_actual = "laboratorio"
-            self.sala = SalaActualView(Sala_Laboratorio(), self)
+            self.sala = SalaActualView(Sala_Laboratorio(), self, 480)
             self.window.show_view(self.sala)
 
         elif self.sala_actual == "laboratorio":
             self.sala_actual = "hidroponia"
-            self.sala = SalaActualView(Sala_Hidroponia(), self)
+            self.sala = SalaActualView(Sala_Hidroponia(), self, 480)
             self.window.show_view(self.sala)
 
         elif self.sala_actual == "hidroponia":
@@ -157,7 +156,7 @@ class Manager(arcade.View):
         if self.sala_actual == "ninguna":
             if time.time() - self.temporizador_inicio > 1.0:
                 self.sala_actual = "tuberias"
-                self.sala = SalaActualView(Sala_Tuberias(), self, 60)
+                self.sala = SalaActualView(Sala_Tuberias(), self, 480)
                 self.window.show_view(self.sala)
 
         # Si hay un video en reproducción
